@@ -16,7 +16,7 @@ class m211019_102028_create_task_table extends Migration
         $this->createTable('{{%task}}', [
             'id' => $this->primaryKey(),
             'date_start' => $this->timestampWithTimezone()->notNull()->comment('дата и время начала преобразования'),
-            'date_end' => $this->timestampWithTimezone()->comment('дата и время конца преобразования'),
+            'date_end' => $this->timestampWithTimezone(null, 'NULL')->comment('дата и время конца преобразования'),
             'status' => $this->integer()->notNull()->comment('статус (1 — в работе, 2 — преобразован, 3 — провал)'),
         ]);
     }

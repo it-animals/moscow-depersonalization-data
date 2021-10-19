@@ -3,7 +3,6 @@
 namespace app\modules\admin\controllers;
 
 use yii\web\Controller;
-use yii\web\Response;
 
 /**
  * Default controller for the `admin` module

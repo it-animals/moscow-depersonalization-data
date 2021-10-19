@@ -1,5 +1,8 @@
 <?php
 
+use yii\mutex\PgsqlMutex;
+use yii\queue\db\Queue;
+
 $params = require __DIR__ . '/params.php';
 $db = require __DIR__ . '/db.php';
 
@@ -28,8 +31,26 @@ $config = [
             ],
         ],
         'db' => $db,
+        'queue' => [
+            'class' => Queue::class,
+            'db' => 'db',
+            'tableName' => '{{%queue}}', // Table name
+            'channel' => 'default', // Queue channel key
+            'mutex' => PgsqlMutex::class, // Mutex used to sync queries
+        ],
     ],
     'params' => $params,
+    'container' => [
+        'definitions' => [
+
+        ],
+        'singletons' => [
+            'app\services\FileService' => [
+                'class' => 'app\services\FileService',
+                'path' => '@app/files/',
+            ],
+        ],
+    ],
     /*
     'controllerMap' => [
         'fixture' => [ // Fixture generation command line.

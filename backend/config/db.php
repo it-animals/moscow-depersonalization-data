@@ -2,10 +2,11 @@
 
 return [
     'class' => 'yii\db\Connection',
-    'dsn' => 'mysql:host=localhost;dbname=yii2basic',
-    'username' => 'root',
-    'password' => '',
+    'dsn' => 'pgsql:host=postgres;dbname=moscow-depersonalization-data',
+    'username' => 'dmitrii',
+    'password' => 'dev',
     'charset' => 'utf8',
+    'on afterOpen' => fn($event) => $event->sender->createCommand("set datestyle = 'German,DMY'")->execute(),
 
     // Schema cache options (for production environment)
     //'enableSchemaCache' => true,

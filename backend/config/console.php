@@ -4,7 +4,7 @@ $params = require __DIR__ . '/params.php';
 $db = require __DIR__ . '/db.php';
 
 $config = [
-    'id' => 'basic-console',
+    'id' => 'moscow-depersonalization-data-console',
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
     'controllerNamespace' => 'app\commands',
@@ -13,6 +13,8 @@ $config = [
         '@npm'   => '@vendor/npm-asset',
         '@tests' => '@app/tests',
     ],
+    'timeZone' => 'Europe/Moscow',
+    'language' => 'ru-RU',
     'components' => [
         'cache' => [
             'class' => 'yii\caching\FileCache',

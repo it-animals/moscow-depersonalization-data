@@ -5,12 +5,14 @@ import { ErrorPage } from "./ui/pages/ErrorPage";
 import { NotFoundPage } from "./ui/pages/NotFoundPage";
 import { UnauthorizedPage } from "./ui/pages/UnauthorizedPage";
 import { ForbiddenPage } from "./ui/pages/ForbiddenPage";
+import { ViewDocumentPage } from "./ui/pages/ViewDocumentPage";
 
 function App() {
   return (
     <>
       <Switch>
         <Route path={"/"} exact component={MainPage} />
+        <Route path={"/view/:id/:image"} component={ViewDocumentPage} />
         <Route path={"/error"} component={ErrorPage} />
         <Route path={"/404"} component={NotFoundPage} />
         <Route path={"/403"} component={ForbiddenPage} />

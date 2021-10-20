@@ -1,13 +1,15 @@
 import styled from "styled-components";
-import { Box, Grid, Typography, useTheme } from "@mui/material";
+import { Box, Button, Grid, Typography, useTheme } from "@mui/material";
 import { FileDownloadOutlined } from "@mui/icons-material";
 import { useEffect, useRef, useState } from "react";
+import { motion } from "framer-motion";
 
 const Form = styled.form<{
   borderColor: string;
 }>`
   width: 100%;
   height: 100%;
+  transition: opacity 0.2s ease-in-out;
   border: 3px dashed ${(props) => props.borderColor};
   border-radius: 15px;
 `;
@@ -21,7 +23,8 @@ const InputFileWrapper = styled.label`
 const InputFile = styled.input`
   display: none;
 `;
-const TextContent = styled.div`
+
+const CenterContent = styled(motion.div)`
   position: absolute;
   top: 50%;
   left: 50%;
@@ -33,10 +36,14 @@ const TextDecoration = styled.span<{ color: string }>`
   cursor: pointer;
 `;
 
-export const UploadFile = () => {
+export const UploadFile: CT<{
+  onLoad: (files: File[]) => void;
+  isLoaded: boolean;
+}> = ({ onLoad, isLoaded }) => {
   const theme = useTheme();
-  const dropRef = useRef<null | HTMLFormElement>(null);
+  const dropRef = useRef<null | HTMLLabelElement>(null);
   const [isDragEnter, setDragEnter] = useState(false);
+  const [files, setFiles] = useState<File[]>([]);
 
   const greyColor = theme.palette.grey["400"];
   const accentColor = theme.palette.secondary.main;
@@ -58,7 +65,30 @@ export const UploadFile = () => {
     e.stopPropagation();
     e.stopImmediatePropagation();
     setDragEnter(false);
-    console.log(e.dataTransfer!.files[0]);
+    setFiles(Array.from(e.dataTransfer!.files));
+  };
+  const dragOverHandler = (e: DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+    setDragEnter(true);
+  };
+
+  const loadFileHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files) {
+      setFiles(Array.from(files));
+    }
+  };
+
+  const clickWrapperHandler = (
+    e: React.MouseEvent<HTMLLabelElement, MouseEvent>
+  ) => {
+    if (files.length > 0) {
+      e.preventDefault();
+      e.stopPropagation();
+      return;
+    }
   };
 
   useEffect(() => {
@@ -66,6 +96,7 @@ export const UploadFile = () => {
     dropRef.current!.addEventListener("dragenter", dragEnterHandler);
     dropRef.current!.addEventListener("dragleave", dragLeaveHandler);
     dropRef.current!.addEventListener("drop", dragDropHandler);
+    dropRef.current!.addEventListener("dragover", dragOverHandler);
     window.addEventListener(
       "drop",
       (e) => {
@@ -83,32 +114,88 @@ export const UploadFile = () => {
     );
   }, [dropRef]);
 
+  useEffect(() => {
+    onLoad(files);
+  }, [files]);
+
+  const loadAnimate = !isLoaded
+    ? {
+        initial: {
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%,-50%)",
+        },
+        animate: {
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%,-50%)",
+        },
+        transition: {
+          duration: 0,
+          delay: 0,
+        },
+      }
+    : {
+        initial: {
+          top: "50%",
+          left: "0",
+          opacity: "0 !important",
+          transform: "translate(-50%,-50%)",
+        },
+        animate: {
+          top: "50%",
+          left: "25px",
+          transform: "translate(0%,-50%)",
+        },
+        transition: {
+          duration: 0.6,
+          delay: 0.5,
+        },
+      };
+
   return (
     <Form
       style={{ opacity: isDragEnter ? 0.2 : 1 }}
-      ref={dropRef}
       borderColor={greyColor}
       action=""
     >
-      <InputFileWrapper>
-        <InputFile id={"upload-wrapper"} type={"file"} />
-        <TextContent>
-          <Grid container justifyContent={"center"} justifyItems={"center"}>
-            <Grid xs={12}>
-              <Box display={"flex"} justifyContent={"center"}>
-                <FileDownloadOutlined
-                  style={{ fill: greyColor, width: "100px", height: "100px" }}
-                />
-              </Box>
+      <InputFileWrapper onClick={clickWrapperHandler} ref={dropRef}>
+        <InputFile
+          onChange={loadFileHandler}
+          id={"upload-wrapper"}
+          type={"file"}
+          multiple
+        />
+        <CenterContent {...loadAnimate}>
+          {!isLoaded ? (
+            <Grid container justifyContent={"center"} justifyItems={"center"}>
+              <Grid xs={12}>
+                <Box display={"flex"} justifyContent={"center"}>
+                  <FileDownloadOutlined
+                    style={{ fill: greyColor, width: "100px", height: "100px" }}
+                  />
+                </Box>
+              </Grid>
+              <Grid>
+                <Typography variant={"h5"}>
+                  <TextDecoration color={accentColor}>Загрузите</TextDecoration>{" "}
+                  или перетащите файлы
+                </Typography>
+              </Grid>
             </Grid>
-            <Grid>
-              <Typography variant={"h5"}>
-                <TextDecoration color={accentColor}>Загрузите</TextDecoration>{" "}
-                или перетащите файлы
-              </Typography>
+          ) : (
+            <Grid container>
+              <Grid>
+                <Typography variant={"h5"}>
+                  <TextDecoration color={accentColor}>
+                    Выбранные файлы
+                  </TextDecoration>
+                  : {files.length}
+                </Typography>
+              </Grid>
             </Grid>
-          </Grid>
-        </TextContent>
+          )}
+        </CenterContent>
       </InputFileWrapper>
     </Form>
   );

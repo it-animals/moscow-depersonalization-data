@@ -69,13 +69,15 @@ class File extends \yii\db\ActiveRecord
     public function afterSave($insert, $changedAttributes) {
         parent::afterSave($insert, $changedAttributes);
         // TODO вынести в EventDispatcher
-        $container = Yii::$container;
-        try {
-            /* @var $service FileService */
-            $service = $container->get(FileService::class);
-            $service->createDir($this);
-        } catch (\Exception $exception) {
-            Yii::error($exception->getMessage());
+        if ($insert) {
+            $container = Yii::$container;
+            try {
+                /* @var $service FileService */
+                $service = $container->get(FileService::class);
+                $service->createDir($this);
+            } catch (\Exception $exception) {
+                Yii::error($exception->getMessage());
+            }
         }
     }
 

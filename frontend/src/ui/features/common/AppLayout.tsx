@@ -5,8 +5,10 @@ import { BrowserRouter as Router } from "react-router-dom";
 import { GlobalStyle } from "../../styles/_global";
 import { ThemeProvider } from "@mui/material";
 import { MUITheme } from "../../styles/_MUITheme";
+import { useGlobalRequestConfiguration } from "../hooks/useGlobalRequestConfiguration";
 
 export const AppLayout: CT<unknown> = ({ children }) => {
+  useGlobalRequestConfiguration();
   return (
     <>
       <GlobalStyle />

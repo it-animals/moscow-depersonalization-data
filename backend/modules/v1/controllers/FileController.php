@@ -10,6 +10,7 @@ use app\modules\v1\traits\OptionsActionTrait;
 use app\services\FileService;
 use Yii;
 use yii\rest\Controller;
+use yii\web\NotFoundHttpException;
 use yii\web\UploadedFile;
 use function date;
 
@@ -30,6 +31,9 @@ class FileController extends Controller
         return BehaviorHelper::api(parent::behaviors(), [
             'POST' => [
                 BehaviorHelper::AUTH_NOT_REQUIRED => ['upload'],
+            ],
+            'GET' => [
+                BehaviorHelper::AUTH_NOT_REQUIRED => ['preview'],
             ],
         ]);
     }
@@ -65,5 +69,23 @@ class FileController extends Controller
         return [
             'task_id' => $task->id,
         ];
+    }
+
+    public function actionPreview(int $id)
+    {
+        $model = $this->findModel($id);
+        if (!$model->image_path) {
+            throw new NotFoundHttpException('Файл не сконвертирован.');
+        }
+        return Yii::$app->response->sendFile($model->image_path, $model->name, ['inline' => true]);
+    }
+
+    protected function findModel($id): File
+    {
+        if (($model = File::findOne($id)) !== null) {
+            return $model;
+        }
+
+        throw new NotFoundHttpException('Запрашиваемая страница не найдена.');
     }
 }

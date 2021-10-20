@@ -71,6 +71,7 @@ class File extends \yii\db\ActiveRecord
         // TODO вынести в EventDispatcher
         $container = Yii::$container;
         try {
+            /* @var $service FileService */
             $service = $container->get(FileService::class);
             $service->createDir($this);
         } catch (\Exception $exception) {
@@ -83,6 +84,7 @@ class File extends \yii\db\ActiveRecord
         // TODO вынести в EventDispatcher
         $container = Yii::$container;
         try {
+            /* @var $service FileService */
             $service = $container->get(FileService::class);
             $service->deleteFile($this);
         } catch (\Exception $exception) {

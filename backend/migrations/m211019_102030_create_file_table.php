@@ -16,6 +16,7 @@ class m211019_102030_create_file_table extends Migration
         $this->createTable('{{%file}}', [
             'id' => $this->primaryKey(),
             'task_id' => $this->integer()->notNull()->comment('FK на задачу преобразования'),
+            'name' => $this->string(10000)->notNull()->comment('имя исходного файла'),
             'date_start' => $this->timestampWithTimezone()->notNull()->comment('дата и время начала преобразования'),
             'date_end' => $this->timestampWithTimezone(null, 'NULL')->comment('дата и время конца преобразования'),
             'status' => $this->integer()->notNull()->comment('статус (1 — в работе, 2 — преобразован, 3 — провал)'),

@@ -10,6 +10,7 @@ use Yii;
  *
  * @property int $id
  * @property int $task_id FK на задачу преобразования
+ * @property string $name имя исходного файла
  * @property string $date_start дата и время начала преобразования
  * @property string|null $date_end дата и время конца преобразования
  * @property int $status статус (1 — в работе, 2 — преобразован, 3 — провал)
@@ -38,7 +39,7 @@ class File extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['task_id', 'status'], 'required'],
+            [['task_id', 'status', 'name'], 'required'],
             [['task_id', 'status'], 'default', 'value' => null],
             [['task_id', 'status'], 'integer'],
             [['date_start', 'date_end'], 'safe'],
@@ -55,6 +56,7 @@ class File extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'task_id' => 'FK на задачу преобразования',
+            'name' => 'имя исходного файла',
             'date_start' => 'дата и время начала преобразования',
             'date_end' => 'дата и время конца преобразования',
             'status' => 'статус (1 — в работе, 2 — преобразован, 3 — провал)',

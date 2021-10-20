@@ -63,7 +63,7 @@ final class FileService extends BaseObject
      */
     public function getFilePath(File $file): string
     {
-        return $this->getFileDir($file) . $file->id;
+        return $this->getFileDir($file) . $file->name;
     }
 
     /**
@@ -74,7 +74,7 @@ final class FileService extends BaseObject
     public function getFileDir(File $file): string
     {
         $dir = intdiv($file->id, 1000) * 1000;
-        return Yii::getAlias($this->path . $dir . '/');
+        return Yii::getAlias($this->path . $dir . '/' . $file->id . '/');
     }
 
     /**

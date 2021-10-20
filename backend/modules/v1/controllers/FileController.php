@@ -45,6 +45,7 @@ class FileController extends Controller
 
         foreach ($files as $file) {
             $model = new File();
+            $model->name = $file->name;
             $model->date_start = date('d.m.Y H:i:s');
             $model->status = File::STATUS_WORK;
             $model->task_id = $task->id;

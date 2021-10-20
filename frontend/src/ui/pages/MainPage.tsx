@@ -14,7 +14,7 @@ import {
   selectPackage,
   setPackage,
 } from "../../service/store/package/packageSlice";
-import { FileItem } from "../components/fileItem/FileItem";
+import { FileList } from "../features/FileList/FileList";
 
 const UploadContainer = styled(motion(Paper))`
   width: 100%;
@@ -94,20 +94,7 @@ export const MainPage: CT<unknown> = () => {
           </Button>
         </ButtonPanel>
       )}
-      {packageFiles && (
-        <Grid
-          container
-          rowSpacing={5}
-          columnSpacing={10}
-          justifyContent={"flex-start"}
-        >
-          {packageFiles.files.map((item) => (
-            <Grid item xs={3} key={item.id}>
-              <FileItem item={item} />
-            </Grid>
-          ))}
-        </Grid>
-      )}
+      {packageFiles && <FileList />}
     </PageTemplate>
   );
 };

@@ -2,9 +2,12 @@
 
 namespace app\modules\v1\controllers;
 
+use app\models\Task;
 use app\modules\v1\helpers\BehaviorHelper;
 use app\modules\v1\traits\OptionsActionTrait;
+use yii\helpers\ArrayHelper;
 use yii\rest\Controller;
+use yii\web\NotFoundHttpException;
 
 class TaskController extends Controller
 {
@@ -21,8 +24,19 @@ class TaskController extends Controller
 
     public function actionView(int $id)
     {
-        return [
-            'id' => $id,
-        ];
+        $task = $this->findModel($id);
+
+        $result = ArrayHelper::toArray($task);
+        $result['files'] = $task->getFiles()->asArray()->all();
+
+        return $result;
+    }
+
+    protected function findModel($id): Task
+    {
+        if (($model = Task::findOne($id)) !== null) {
+            return $model;
+        }
+        throw new NotFoundHttpException('Задача не найдена.');
     }
 }

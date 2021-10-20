@@ -62,7 +62,7 @@ class FileController extends Controller
         }
 
         return [
-            'result' => count($files)
+            'task_id' => $task->id,
         ];
     }
 }

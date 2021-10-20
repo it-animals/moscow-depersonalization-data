@@ -1,4 +1,4 @@
-init: down-clear yarn-install up composer-install migrate
+init: down-clear yarn-install up composer-install migrate queue
 restart: down up
 up:
 	(cd backend && docker-compose up -d) && \
@@ -9,7 +9,7 @@ down:
 down-clear:
 	(cd backend && docker-compose down -v --remove-orphans) && \
 	(cd frontend && docker-compose down -v --remove-orphans) && \
-	(cd backend/files && rm -vrf ./*)
+	(cd backend/files && sudo rm -vrf ./*)
 status:
 	(cd backend && docker-compose ps -a) && \
 	(cd frontend && docker-compose ps -a)
@@ -21,3 +21,5 @@ yarn-install:
 	(cd frontend && docker-compose run --rm node yarn install)
 migrate:
 	(cd backend && docker-compose exec php yii migrate --interactive=0)
+queue:
+	(cd backend && docker-compose exec -d php yii queue/listen)

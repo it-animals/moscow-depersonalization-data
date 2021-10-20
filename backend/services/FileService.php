@@ -3,13 +3,17 @@
 
 namespace app\services;
 
-use Yii;
 use app\models\File;
+use Yii;
 use yii\base\BaseObject;
+use yii\base\Exception;
 use yii\base\InvalidArgumentException;
 use yii\helpers\FileHelper;
-use yii\base\Exception;
-use function var_dump;
+use function array_merge;
+use function file_exists;
+use function intdiv;
+use function key_exists;
+use function unlink;
 
 final class FileService extends BaseObject
 {

@@ -62,7 +62,7 @@ class FileController extends Controller
         }
 
         return [
-            'result' => 'ok'
+            'result' => count($files)
         ];
     }
 }

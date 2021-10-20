@@ -8,7 +8,7 @@ $db = require __DIR__ . '/db.php';
 
 $config = [
     'id' => 'moscow-depersonalization-data',
-    'name' => 'ADMIN',
+    'name' => 'Панель администратора',
     'homeUrl' => '/admin/default/index',
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],

@@ -57,10 +57,8 @@ export const UploadFile = () => {
     e.preventDefault();
     e.stopPropagation();
     e.stopImmediatePropagation();
-    e.dataTransfer!.effectAllowed = "none";
-    e.dataTransfer!.dropEffect = "none";
     setDragEnter(false);
-    console.log(e);
+    console.log(e.dataTransfer!.files[0]);
   };
 
   useEffect(() => {

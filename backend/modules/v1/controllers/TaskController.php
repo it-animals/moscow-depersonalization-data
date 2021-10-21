@@ -17,7 +17,7 @@ class TaskController extends Controller
     {
         return BehaviorHelper::api(parent::behaviors(), [
             'GET' => [
-                BehaviorHelper::AUTH_NOT_REQUIRED => ['view'],
+                BehaviorHelper::AUTH_NOT_REQUIRED => ['view', 'list'],
             ],
         ]);
     }
@@ -30,6 +30,11 @@ class TaskController extends Controller
         $result['files'] = $task->getFiles()->asArray()->all();
 
         return $result;
+    }
+
+    public function actionList()
+    {
+        return Task::find()->asArray()->all();
     }
 
     protected function findModel($id): Task

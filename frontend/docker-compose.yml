@@ -7,7 +7,5 @@ services:
       - ./:/app:delegated
     command: yarn serve
     restart: always
-    environment:
-      NODE_ENV: dev
     ports:
       - '8001:5000'

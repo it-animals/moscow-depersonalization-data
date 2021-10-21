@@ -1,4 +1,4 @@
-init: down-clear yarn-install up composer-install migrate queue
+init: down-clear yarn-install yarn-build up composer-install migrate queue
 restart: down up
 up:
 	(cd backend && docker-compose up -d) && \

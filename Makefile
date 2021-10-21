@@ -19,6 +19,8 @@ composer-install:
 	(cd backend && docker-compose exec php composer install)
 yarn-install:
 	(cd frontend && docker-compose run --rm node yarn install)
+yarn-build:
+	(cd frontend && docker-compose run --rm node yarn build)
 migrate:
 	(cd backend && docker-compose exec php yii migrate --interactive=0)
 queue:

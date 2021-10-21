@@ -11,3 +11,7 @@ RUN apt-get update && \
         imagemagick
 
 RUN sed -i '/disable ghostscript format types/,+6d' /etc/ImageMagick-6/policy.xml
+
+RUN apt-get update && \
+    apt-get -y install \
+        poppler-utils

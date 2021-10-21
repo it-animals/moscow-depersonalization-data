@@ -5,6 +5,8 @@ import { store } from "./service/store/store";
 import { Provider } from "react-redux";
 import * as serviceWorker from "./serviceWorker";
 import { AppLayout } from "./ui/features/common/AppLayout";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 
 ReactDOM.render(
   <React.StrictMode>

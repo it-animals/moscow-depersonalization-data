@@ -3,14 +3,15 @@ import { Button, Paper, Typography } from "@mui/material";
 import { FileType } from "../../../domain/file";
 import { motion } from "framer-motion";
 import { upToDownAnimate } from "../../lib/animations/upToDownAnimate";
-
+import { Link } from "react-router-dom";
 const Container = styled(motion(Paper))`
-  min-height: 50px;
   padding: 20px;
   display: flex;
+  min-height: 150px;
   justify-content: center;
   flex-direction: column;
   cursor: pointer;
+
   & h6 {
     overflow: hidden;
     text-overflow: ellipsis;
@@ -20,20 +21,29 @@ const Container = styled(motion(Paper))`
   }
 `;
 
-export const FileItem: CT<{ item: FileType }> = ({ item }) => {
+export const FileItem: CT<{ item: FileType; showAnimate: boolean }> = ({
+  item,
+  showAnimate,
+}) => {
   return (
     <Container
       {...upToDownAnimate}
-      transition={{ delay: 0.3, duration: 0.3, ease: ["easeInOut"] }}
+      transition={{
+        delay: showAnimate ? 0.6 : 0,
+        duration: showAnimate ? 0.3 : 0.3,
+        ease: ["easeInOut"],
+      }}
     >
       <Typography variant={"h6"}>{item.name}</Typography>
-      <Button
-        style={{ marginTop: 10 }}
-        variant={"contained"}
-        color={"secondary"}
-      >
-        Просмотр
-      </Button>
+      <Link to={`/view/${item.id}/1`}>
+        <Button
+          style={{ marginTop: 10 }}
+          variant={"contained"}
+          color={"secondary"}
+        >
+          Просмотр
+        </Button>
+      </Link>
     </Container>
   );
 };

@@ -2,7 +2,7 @@ import { PageTemplate } from "../components/templates/PageTemplate";
 import { UploadFile } from "../features/UploadFile/UploadFile";
 import styled from "styled-components";
 import { Button, Grid, Paper, useTheme } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { fileService } from "../../service/file/fileService";
 import { motion } from "framer-motion";
 import { upToDownAnimate } from "../lib/animations/upToDownAnimate";
@@ -15,6 +15,9 @@ import {
   setPackage,
 } from "../../service/store/package/packageSlice";
 import { FileList } from "../features/FileList/FileList";
+import { useHistory, useParams } from "react-router-dom";
+import { packageCompleted } from "../../domain/package";
+import { PackageStatus } from "../components/packageStatus/PackageStatus";
 
 const UploadContainer = styled(motion(Paper))`
   width: 100%;
@@ -44,8 +47,11 @@ export const MainPage: CT<unknown> = () => {
   const [files, setFiles] = useState<File[]>([]);
   const [processLoad, setProcessLoad] = useState(false);
 
+  const params = useParams<{ packageId?: string }>();
+
   const dispath = useAppDispatch();
   const packageFiles = useAppSelector(selectPackage);
+  const history = useHistory();
 
   const uploadAnimate = !!files.length
     ? uploadFileAnimate.haveFiles
@@ -63,13 +69,34 @@ export const MainPage: CT<unknown> = () => {
     setProcessLoad(true);
     const data = await fileService.upload(files);
     const idPackage = data.data.task_id;
-    const task = await taskService.view(idPackage);
-    dispath(setPackage(task.data));
+    history.push(`/${data.data.task_id}`);
   };
+
+  useEffect(() => {
+    if (!params.packageId) return;
+    if (isNaN(Number(params.packageId))) {
+      history.push("/");
+    }
+    const load = async () => {
+      try {
+        const task = await taskService.view(Number(params.packageId));
+        dispath(setPackage(task.data));
+        if (task.data.status !== 2) {
+          setTimeout(load, 1500);
+        }
+      } catch (e) {
+        console.log(e);
+        history.push("/");
+      }
+    };
+    load();
+  }, [params]);
+  console.log(params);
 
   return (
     <PageTemplate>
-      {!packageFiles && (
+      {<PackageStatus packageFile={packageFiles ?? null} />}
+      {!params.packageId && (
         <UploadContainer {...uploadAnimate}>
           <UploadFile isLoaded={!!files.length} onLoad={loadFileHandler} />
           {processLoad && <FormLoader />}

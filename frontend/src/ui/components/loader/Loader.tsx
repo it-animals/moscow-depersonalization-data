@@ -40,7 +40,7 @@ export const Loader: CT<unknown> = ({ className, children }) => {
         }}
       />
       <Typography color={"white"} variant={"h6"}>
-        Идет обработка файлов...
+        Идет подготовка файлов...
       </Typography>
     </Container>
   );

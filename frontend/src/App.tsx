@@ -12,6 +12,7 @@ function App() {
     <>
       <Switch>
         <Route path={"/"} exact component={MainPage} />
+        <Route path={"/:packageId"} component={MainPage} />
         <Route path={"/view/:id/:image"} component={ViewDocumentPage} />
         <Route path={"/error"} component={ErrorPage} />
         <Route path={"/404"} component={NotFoundPage} />

@@ -7,3 +7,7 @@ export type PackageType = {
   status: 1 | 2 | 3; //      (1 — в работе, 2 — преобразован, 3 — провал)
   files: FileType[];
 };
+
+export const packageInWork = (file: PackageType) => file.status === 1;
+export const packageCompleted = (file: PackageType) => file.status === 2;
+export const packageError = (file: PackageType) => file.status === 3;

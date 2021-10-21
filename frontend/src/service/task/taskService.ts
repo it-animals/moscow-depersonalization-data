@@ -7,4 +7,8 @@ export const taskService = {
   view(id: PackageType["id"]) {
     return axios.get<PackageType>(this.path + `view?id=${id}`);
   },
+
+  list() {
+    return axios.get<PackageType[]>(this.path + "list");
+  },
 };

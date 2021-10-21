@@ -3,6 +3,11 @@ import styled from "styled-components";
 import { Button, Grid, Typography } from "@mui/material";
 import { PackageItem } from "../components/packageItem/PackageItem";
 import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { PackageType } from "../../domain/package";
+import { taskService } from "../../service/task/taskService";
+import { motion } from "framer-motion";
+import { upToDownAnimate } from "../lib/animations/upToDownAnimate";
 
 const TopLine = styled.div`
   width: 100%;
@@ -13,7 +18,18 @@ const TopLine = styled.div`
   margin-bottom: 40px;
 `;
 
+const LinePackage = styled(motion(Grid))``;
+
 export const PackageListPage: CT<unknown> = () => {
+  const [list, setList] = useState<PackageType[]>([]);
+
+  useEffect(() => {
+    (async () => {
+      const data = await taskService.list();
+      setList(data.data);
+    })();
+  }, []);
+
   return (
     <PageTemplate>
       <TopLine>
@@ -33,20 +49,31 @@ export const PackageListPage: CT<unknown> = () => {
           </Button>
         </Link>
       </TopLine>
-      <Grid
-        container
-        rowSpacing={2}
-        columnSpacing={10}
-        justifyContent={"flex-start"}
-      >
-        {new Array(10).fill(0).map((item) => {
-          return (
-            <Grid item xs={4}>
-              <PackageItem id={1} status={3} />
-            </Grid>
-          );
-        })}
-      </Grid>
+      {!!list.length && (
+        <Grid
+          container
+          rowSpacing={2}
+          columnSpacing={10}
+          justifyContent={"flex-start"}
+        >
+          {list.map((item) => {
+            return (
+              <LinePackage
+                {...upToDownAnimate}
+                transition={{
+                  ease: ["easeInOut"],
+                  duration: 0.4,
+                  delay: 0.1,
+                }}
+                item
+                xs={4}
+              >
+                <PackageItem id={item.id} status={item.status} />
+              </LinePackage>
+            );
+          })}
+        </Grid>
+      )}
     </PageTemplate>
   );
 };

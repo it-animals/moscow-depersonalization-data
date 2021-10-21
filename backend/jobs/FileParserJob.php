@@ -51,6 +51,22 @@ class FileParserJob extends BaseObject implements JobInterface
             $file->save(true, ['status', 'date_end']);
         }
 
+        $task = $file->task;
+        $countOnWork = 0;
+        $countOnError = 0;
+        foreach ($task->files as $model) {
+            if ($model->status === File::STATUS_WORK) {
+                $countOnWork++;
+            } elseif ($model->status === File::STATUS_ERROR) {
+                $countOnError++;
+            }
+        }
+        if ($countOnWork === 0) {
+            $task->status = $countOnError ? File::STATUS_ERROR : File::STATUS_DONE;
+            $task->date_end = date('d.m.Y H:i:s');
+            $task->save(true, ['status', 'date_end']);
+        }
+
         return true;
     }
 

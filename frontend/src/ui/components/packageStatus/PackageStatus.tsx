@@ -24,7 +24,7 @@ export const PackageStatus: CT<{ packageFile: PackageType | null }> = ({
           color={"secondary.main"}
           variant={"h5"}
         >
-          Пакет документов находится в обработке
+          Пакет документов №{packageFile.id} находится в обработке
         </Typography>
       </Status>
     );

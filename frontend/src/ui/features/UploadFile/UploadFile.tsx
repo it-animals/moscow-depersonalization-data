@@ -28,9 +28,15 @@ const CenterContent = styled(motion.div)`
   position: absolute;
   top: 50%;
   left: 50%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   transform: translate(-50%, -50%);
 `;
 const TextDecoration = styled.span<{ color: string }>`
+  text-align: center;
   color: ${(props) => props.color};
   text-decoration: underline;
   cursor: pointer;
@@ -169,17 +175,17 @@ export const UploadFile: CT<{
         <CenterContent {...loadAnimate}>
           {!isLoaded ? (
             <Grid container justifyContent={"center"} justifyItems={"center"}>
-              <Grid xs={12}>
+              <Grid item xs={12}>
                 <Box display={"flex"} justifyContent={"center"}>
                   <FileDownloadOutlined
                     style={{ fill: greyColor, width: "100px", height: "100px" }}
                   />
                 </Box>
               </Grid>
-              <Grid>
-                <Typography variant={"h5"}>
+              <Grid item xs={12}>
+                <Typography textAlign={"center"} variant={"h5"}>
                   <TextDecoration color={accentColor}>Загрузите</TextDecoration>{" "}
-                  или перетащите файлы
+                  или перенесите файлы (.pdf,.word,.jpg,.png,...)
                 </Typography>
               </Grid>
             </Grid>

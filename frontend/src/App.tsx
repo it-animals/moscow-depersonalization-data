@@ -1,18 +1,21 @@
 import React from "react";
 import { Route, Switch } from "react-router-dom";
-import { MainPage } from "./ui/pages/MainPage";
+import { PackagePage } from "./ui/pages/PackagePage";
 import { ErrorPage } from "./ui/pages/ErrorPage";
 import { NotFoundPage } from "./ui/pages/NotFoundPage";
 import { UnauthorizedPage } from "./ui/pages/UnauthorizedPage";
 import { ForbiddenPage } from "./ui/pages/ForbiddenPage";
 import { ViewDocumentPage } from "./ui/pages/ViewDocumentPage";
+import { PackageListPage } from "./ui/pages/PackageListPage";
+import { LoadPage } from "./ui/pages/LoadPage";
 
 function App() {
   return (
     <>
       <Switch>
-        <Route path={"/"} exact component={MainPage} />
-        <Route path={"/:packageId"} component={MainPage} />
+        <Route path={"/"} exact component={PackageListPage} />
+        <Route path={"/load/"} exact component={LoadPage} />
+        <Route path={"/package/:packageId"} component={PackagePage} />
         <Route path={"/view/:id/:image"} component={ViewDocumentPage} />
         <Route path={"/error"} component={ErrorPage} />
         <Route path={"/404"} component={NotFoundPage} />

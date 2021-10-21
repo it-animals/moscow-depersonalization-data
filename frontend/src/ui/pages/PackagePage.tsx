@@ -11,13 +11,15 @@ import { Loader } from "../components/loader/Loader";
 import { taskService } from "../../service/task/taskService";
 import { useAppDispatch, useAppSelector } from "../../service/store/store";
 import {
+  clearAllPackage,
   selectPackage,
   setPackage,
 } from "../../service/store/package/packageSlice";
 import { FileList } from "../features/FileList/FileList";
-import { useHistory, useParams } from "react-router-dom";
+import { Link, useHistory, useParams } from "react-router-dom";
 import { packageCompleted } from "../../domain/package";
 import { PackageStatus } from "../components/packageStatus/PackageStatus";
+import { TimeoutId } from "@reduxjs/toolkit/dist/query/core/buildMiddleware/types";
 
 const UploadContainer = styled(motion(Paper))`
   width: 100%;
@@ -43,85 +45,51 @@ const FormLoader = styled(Loader)`
   z-index: 11;
 `;
 
-export const MainPage: CT<unknown> = () => {
-  const [files, setFiles] = useState<File[]>([]);
-  const [processLoad, setProcessLoad] = useState(false);
-
+export const PackagePage: CT<unknown> = () => {
+  let timeout: TimeoutId;
   const params = useParams<{ packageId?: string }>();
 
   const dispath = useAppDispatch();
   const packageFiles = useAppSelector(selectPackage);
   const history = useHistory();
 
-  const uploadAnimate = !!files.length
-    ? uploadFileAnimate.haveFiles
-    : uploadFileAnimate.notFiles;
-
-  const loadFileHandler = (files: File[]) => {
-    setFiles(files);
-  };
-
-  const clearHandler = () => {
-    setFiles([]);
-  };
-
-  const submitHandler = async () => {
-    setProcessLoad(true);
-    const data = await fileService.upload(files);
-    const idPackage = data.data.task_id;
-    history.push(`/${data.data.task_id}`);
-  };
-
   useEffect(() => {
     if (!params.packageId) return;
     if (isNaN(Number(params.packageId))) {
-      history.push("/");
+      history.push("/load/");
     }
     const load = async () => {
       try {
         const task = await taskService.view(Number(params.packageId));
         dispath(setPackage(task.data));
-        if (task.data.status !== 2) {
-          setTimeout(load, 1500);
+        if (task.data.status === 1) {
+          timeout = setTimeout(load, 1500);
         }
       } catch (e) {
         console.log(e);
-        history.push("/");
+        history.push("/load/");
       }
     };
     load();
   }, [params]);
-  console.log(params);
 
+  useEffect(() => {
+    dispath(clearAllPackage());
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      clearTimeout(timeout);
+      dispath(clearAllPackage());
+    };
+  }, []);
+
+  console.log(history.location.pathname);
   return (
     <PageTemplate>
       {<PackageStatus packageFile={packageFiles ?? null} />}
-      {!params.packageId && (
-        <UploadContainer {...uploadAnimate}>
-          <UploadFile isLoaded={!!files.length} onLoad={loadFileHandler} />
-          {processLoad && <FormLoader />}
-        </UploadContainer>
-      )}
 
-      {!!files.length && !processLoad && (
-        <ButtonPanel
-          initial={upToDownAnimate.initial}
-          animate={upToDownAnimate.animate}
-          transition={upToDownAnimate.transition}
-        >
-          <Button
-            color={"secondary"}
-            variant={"contained"}
-            onClick={submitHandler}
-          >
-            Обработать
-          </Button>
-          <Button onClick={clearHandler} variant={"contained"}>
-            Сбросить
-          </Button>
-        </ButtonPanel>
-      )}
-      {packageFiles && <FileList />}
+      {packageFiles && history.location.pathname !== "/load/" && <FileList />}
     </PageTemplate>
   );
 };

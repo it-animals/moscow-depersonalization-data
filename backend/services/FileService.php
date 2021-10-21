@@ -53,6 +53,8 @@ final class FileService extends BaseObject
         $path = $this->getFileDir($file);
         if (!file_exists($path)) {
             FileHelper::createDirectory($path);
+            FileHelper::createDirectory($path . '/pdf');
+            FileHelper::createDirectory($path . '/jpg');
         }
     }
 

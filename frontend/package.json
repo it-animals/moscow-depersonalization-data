@@ -34,6 +34,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
+    "serve": "serve build",
     "eject": "react-scripts eject",
     "prettier all": "prettier --write src/**/*.tsx"
   },

@@ -23,3 +23,6 @@ migrate:
 	(cd backend && docker-compose exec php yii migrate --interactive=0)
 queue:
 	(cd backend && docker-compose exec -d php yii queue/listen)
+build:
+	(cd backend && docker-compose build) && \
+	(cd frontend && docker-compose build)

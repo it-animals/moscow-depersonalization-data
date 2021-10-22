@@ -8,6 +8,7 @@ export type FileType = {
   name: string;
   result_path: string | null;
   image_path: string | null;
+  image_pages: number; // количество преобразованных картинок
 };
 
 export const fileInWork = (file: FileType) => file.status === 1;

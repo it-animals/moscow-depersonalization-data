@@ -7,7 +7,7 @@ const mock = {
   id: 1,
   date_start: "21.10.2021 12:52:05 UTC",
   date_end: null,
-  status: 1,
+  status: 3,
   files: [
     {
       id: 1,
@@ -61,7 +61,7 @@ export const packageSlice = createSlice({
       state.filteredPackage = {
         ...state.package!,
         files: state.package!.files.filter((file) =>
-          file.name.includes(action.payload)
+          file.name.toLowerCase().includes(action.payload.toLowerCase())
         ),
       };
     },

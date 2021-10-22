@@ -45,13 +45,17 @@ const FormLoader = styled(Loader)`
   z-index: 11;
 `;
 
-const TopLine = styled.div`
+const TopLine = styled(motion.div)`
   width: 100%;
   height: 50px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 20px;
+`;
+
+const StatusWrapper = styled(motion.div)`
+  display: flex;
 `;
 
 export const PackagePage: CT<unknown> = () => {
@@ -96,7 +100,14 @@ export const PackagePage: CT<unknown> = () => {
   console.log(history.location.pathname);
   return (
     <PageTemplate>
-      <TopLine>
+      <TopLine
+        {...upToDownAnimate}
+        transition={{
+          delay: 0,
+          duration: 0.3,
+          ease: ["easeIn"],
+        }}
+      >
         <Link to={"/"}>
           <Button variant={"contained"}>К списку пакетов</Button>
         </Link>
@@ -106,7 +117,18 @@ export const PackagePage: CT<unknown> = () => {
           </Button>
         </Link>
       </TopLine>
-      {<PackageStatus packageFile={packageFiles ?? null} />}
+      {
+        <StatusWrapper
+          {...upToDownAnimate}
+          transition={{
+            delay: 0.0,
+            duration: 0.3,
+            ease: ["easeIn"],
+          }}
+        >
+          <PackageStatus packageFile={packageFiles ?? null} />
+        </StatusWrapper>
+      }
 
       {packageFiles && history.location.pathname !== "/load/" && <FileList />}
     </PageTemplate>

@@ -5,7 +5,6 @@ import { Link } from "react-router-dom";
 
 const Container = styled(Paper)`
   width: 100%;
-  min-height: 160px;
   padding: 20px;
   display: flex;
   flex-direction: column;

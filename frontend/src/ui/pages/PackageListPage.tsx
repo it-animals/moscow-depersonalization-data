@@ -9,7 +9,7 @@ import { taskService } from "../../service/task/taskService";
 import { motion } from "framer-motion";
 import { upToDownAnimate } from "../lib/animations/upToDownAnimate";
 
-const TopLine = styled.div`
+const TopLine = styled(motion.div)`
   width: 100%;
   height: 50px;
   display: flex;
@@ -32,7 +32,14 @@ export const PackageListPage: CT<unknown> = () => {
 
   return (
     <PageTemplate>
-      <TopLine>
+      <TopLine
+        {...upToDownAnimate}
+        transition={{
+          delay: 0,
+          duration: 0.3,
+          ease: ["easeInOut"],
+        }}
+      >
         <Typography
           style={{ textDecoration: "underline" }}
           color={"secondary.main"}

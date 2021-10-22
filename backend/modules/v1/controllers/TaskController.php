@@ -33,7 +33,7 @@ class TaskController extends Controller
         $files = $task->getFiles()->asArray()->all();
         foreach ($files as $key => $file) {
             if (is_dir($file['image_path'])) {
-                $previewDir = scandir($file['image_path'] . '/jpg');
+                $previewDir = scandir($file['image_path']);
                 $file['image_pages'] = count($previewDir) > 2 ? count($previewDir) - 2 : 0;
             } else {
                 $file['image_pages'] = 0;

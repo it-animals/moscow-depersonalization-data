@@ -1,9 +1,11 @@
 <?php
 
 namespace app\parsers;
+
 use Yii;
 use yii\helpers\FileHelper;
-use app\parsers\ImageParser;
+use function dirname;
+use function var_dump;
 
 /**
  * Парсер персональных данных в pdf
@@ -11,35 +13,47 @@ use app\parsers\ImageParser;
  *
  * @author restlin
  */
-class FileParser {
+class FileParser
+{
     private string $inputPath;
     private string $type;
 
-    public function __construct(string $inputPath) {
+    private string $path;
+    public function __construct(string $inputPath)
+    {
         $this->inputPath = $inputPath;
+        $path = dirname($inputPath);
+        $this->path = $path;
+        FileHelper::createDirectory("{$path}/input");
+        FileHelper::createDirectory("{$path}/result");
+        FileHelper::createDirectory("{$path}/image");
+        FileHelper::createDirectory("{$path}/tmp");
+
         $this->type = $this->getFileType($inputPath);
     }
-    public function parse(): bool {
+
+    public function parse(): bool
+    {
         $logs = [];
-        $tmpFolder = Yii::getAlias("@runtime/tmp".rand(1, 100));
-        if(!file_exists($tmpFolder)) {
+        $tmpFolder = Yii::getAlias("{$this->path}/tmp");
+        if (!file_exists($tmpFolder)) {
             mkdir($tmpFolder);
         }
-        if($this->type == 'pdf') {
+        if ($this->type == 'pdf') {
             //@todo pdf без текста
             return $this->parsePdf($this->inputPath);
-        } elseif($this->type == 'image') {
+        } elseif ($this->type == 'image') {
             $command = "tesseract -l rus+eng {$this->inputPath} {$tmpFolder}/out pdf";
             exec($command, $logs);
-            $pdfPath = $tmpFolder.'/out.pdf';
+            $pdfPath = $tmpFolder . '/out.pdf';
             $result = $this->parsePdf($pdfPath);
             return $result;
-        } elseif($this->type == 'office') {
+        } elseif ($this->type == 'office') {
             $command = "export HOME=/tmp && libreoffice --headless --convert-to pdf {$this->inputPath} --outdir {$tmpFolder}";
             exec($command, $logs);
             $filename = basename($this->inputPath);
             $name = preg_replace('/\..+$/u', '', $filename);
-            $pdfPath = $tmpFolder.'/'.$name.'.pdf';
+            $pdfPath = $tmpFolder . '/' . $name . '.pdf';
             $result = $this->parsePdf($pdfPath);
             return $result;
         }
@@ -47,47 +61,50 @@ class FileParser {
         return false;
     }
 
-    public function parsePdf(string $inputPath): bool {
-        $inputFolder = Yii::getAlias("@runtime/input".rand(1, 100));
-        if(!file_exists($inputFolder)) {
+    public function parsePdf(string $inputPath): bool
+    {
+
+        $inputFolder = Yii::getAlias("{$this->path}/input");
+        if (!file_exists($inputFolder)) {
             mkdir($inputFolder);
         }
-        $resultFolder = Yii::getAlias("@runtime/result".rand(1, 100));
-        if(!file_exists($resultFolder)) {
+        $resultFolder = Yii::getAlias("{$this->path}/result");
+        if (!file_exists($resultFolder)) {
             mkdir($resultFolder);
         }
-        $imageFolder = Yii::getAlias("@runtime/image".rand(1, 100));
-        if(!file_exists($imageFolder)) {
+        $imageFolder = Yii::getAlias("{$this->path}/image");
+        if (!file_exists($imageFolder)) {
             mkdir($imageFolder);
         }
         $logs = [];
-        $command1 = "pdftk {$inputPath} burst output {$inputFolder}/%d.pdf 2>&1";
+        $command1 = "pdftk '{$inputPath}' burst output {$inputFolder}/%d.pdf 2>&1";
         exec($command1, $logs);
         foreach (glob("$inputFolder/*.pdf") as $pdfPath) {
             $command2 = "pdfimages -j -f 1 -l 1 $pdfPath $imageFolder/";
             exec($command2, $logs);
-            $imgPath = $imageFolder.'/-000.jpg';
-            $resultPath = $resultFolder.'/'.str_replace('.pdf', '.jpg', basename($pdfPath));
+            $imgPath = $imageFolder . '/-000.jpg';
+            $resultPath = $resultFolder . '/' . str_replace('.pdf', '.jpg', basename($pdfPath));
             $imgParser = new ImageParser($imgPath, $pdfPath, $resultPath);
             $imgParser->parse();
         }
         FileHelper::removeDirectory($imageFolder);
         FileHelper::removeDirectory($inputFolder);
         //FileHelper::removeDirectory($resultFolder);
-        echo $resultFolder,"\n";
+        echo $resultFolder, "\n";
         return true;
     }
 
-    private function getFileType(string $path): ?string {
-        $mime = exec("file --mime $path");
+    private function getFileType(string $path): ?string
+    {
+        $mime = exec("file --mime '$path'");
         $name = basename($path);
         $extension = preg_replace('/^.+\./u', '', $name);
         //@todo добавить проверку по mime
-        if(in_array($extension, ['odt', 'ods', 'doc', 'docx', 'xls', 'xlsx', 'rtf'])) {
+        if (in_array($extension, ['odt', 'ods', 'doc', 'docx', 'xls', 'xlsx', 'rtf'])) {
             return 'office';
-        } elseif(in_array($extension, ['jpg', 'jpeg', 'png'])) {
+        } elseif (in_array($extension, ['jpg', 'jpeg', 'png'])) {
             return 'image';
-        } elseif($extension == 'pdf') {
+        } elseif ($extension == 'pdf') {
             return 'pdf';
         }
         return null;

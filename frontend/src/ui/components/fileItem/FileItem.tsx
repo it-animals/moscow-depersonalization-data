@@ -6,6 +6,8 @@ import { upToDownAnimate } from "../../lib/animations/upToDownAnimate";
 import { Link } from "react-router-dom";
 import { Loop } from "@mui/icons-material";
 import { NearbyErrorOutlined } from "@mui/icons-material";
+import { useAppDispatch } from "../../../service/store/store";
+import { setViewFile } from "../../../service/store/file/fileViewSlice";
 
 const rotate = keyframes`
   from {
@@ -81,6 +83,12 @@ export const FileItem: CT<{ item: FileType; showAnimate: boolean }> = ({
   item,
   showAnimate,
 }) => {
+  const dispatch = useAppDispatch();
+
+  const clickHandler = () => {
+    dispatch(setViewFile(item));
+  };
+
   if (fileError(item)) {
     return (
       <Container
@@ -130,6 +138,7 @@ export const FileItem: CT<{ item: FileType; showAnimate: boolean }> = ({
       <Typography variant={"h6"}>{item.name}</Typography>
       <Link to={`/view/${item.id}/1`}>
         <Button
+          onClick={clickHandler}
           style={{ marginTop: 10 }}
           variant={"contained"}
           color={"secondary"}

@@ -13,6 +13,12 @@ import Image8 from "../../assets/tatu_na_kljuchice_devushki_malenkie_ptichki_big
 import { PageTemplateView } from "../components/templates/PageTemplateView";
 import { useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "../../service/store/store";
+import {
+  clearViewFile,
+  selectViewFile,
+} from "../../service/store/file/fileViewSlice";
+import { appConfig, isDev } from "../../config";
 
 const Content = styled.div`
   width: 100%;
@@ -39,53 +45,56 @@ const settings = {
   infinite: true,
   speed: 500,
   swipe: false,
+  lazyLoad: true,
   slidesToShow: 1,
   slidesToScroll: 1,
 };
 export const ViewDocumentPage: CT<unknown> = () => {
   const params = useParams<{ id: string; image: string }>();
-
+  const viewFile = useAppSelector(selectViewFile);
   const refSlider = useRef(null);
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
-    if (!refSlider) return;
-    console.log(params);
-    //@ts-ignore
-    refSlider.current.slickGoTo(Number(params.image - 1));
-  }, [refSlider, params.image]);
+    return () => {
+      dispatch(clearViewFile);
+    };
+  }, []);
 
+  useEffect(() => {
+    if (!refSlider || !viewFile) return;
+    console.log(params);
+    setTimeout(() => {
+      //@ts-ignore
+      refSlider.current.slickGoTo(Number(params.image - 1));
+    }, 0);
+  }, [refSlider, viewFile, params.image]);
+
+  const path = appConfig.apiUrl;
   return (
     <PageTemplateView>
-      <Content>
-        <SliderWrapper>
-          <Slider ref={refSlider} {...settings}>
-            <ImageWrapper>
-              <img src={Image1} alt="" />
-            </ImageWrapper>
-            <ImageWrapper>
-              <img src={Image2} alt="" />
-            </ImageWrapper>
-            <ImageWrapper>
-              <img src={Image3} alt="" />
-            </ImageWrapper>
-            <ImageWrapper>
-              <img src={Image4} alt="" />
-            </ImageWrapper>
-            <ImageWrapper>
-              <img src={Image5} alt="" />
-            </ImageWrapper>
-            <ImageWrapper>
-              <img src={Image6} alt="" />
-            </ImageWrapper>
-            <ImageWrapper>
-              <img src={Image7} alt="" />
-            </ImageWrapper>
-            <ImageWrapper>
-              <img src={Image8} alt="" />
-            </ImageWrapper>
-          </Slider>
-        </SliderWrapper>
-      </Content>
+      {viewFile && (
+        <Content>
+          <SliderWrapper>
+            {
+              //@ts-ignore
+
+              <Slider ref={refSlider} {...settings}>
+                {new Array(viewFile.image_pages).fill(0).map((item, i) => (
+                  <ImageWrapper key={i}>
+                    <img
+                      src={`${path}file/preview?id=${params.id}&page=${
+                        Number(params.image) - 1
+                      }`}
+                      alt=""
+                    />
+                  </ImageWrapper>
+                ))}
+              </Slider>
+            }
+          </SliderWrapper>
+        </Content>
+      )}
     </PageTemplateView>
   );
 };

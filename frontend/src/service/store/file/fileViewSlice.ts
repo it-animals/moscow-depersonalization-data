@@ -23,3 +23,5 @@ export const { clearViewFile, setViewFile } = packageSlice.actions;
 export default packageSlice.reducer;
 
 export const selectViewFile = (state: RootState) => state.viewFile;
+export const selectCountImages = (state: RootState) =>
+  state.viewFile?.image_pages ?? null;

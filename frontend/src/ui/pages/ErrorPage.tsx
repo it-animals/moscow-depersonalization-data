@@ -1,8 +1,17 @@
 import { Button, Grid, Typography } from "@mui/material";
 import { PageTemplate } from "../components/templates/PageTemplate";
 import { Link } from "react-router-dom";
+import { useEffect } from "react";
+import { useAppDispatch } from "../../service/store/store";
+import { clearAppError } from "../../service/store/application/appSlice";
 
 export const ErrorPage: CT<unknown> = () => {
+  const dispatch = useAppDispatch();
+  useEffect(() => {
+    return () => {
+      dispatch(clearAppError());
+    };
+  }, []);
   return (
     <>
       <PageTemplate>

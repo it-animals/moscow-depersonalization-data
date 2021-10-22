@@ -1,7 +1,16 @@
 import { PageTemplate } from "../components/templates/PageTemplate";
 import { Button, Grid, Typography } from "@mui/material";
+import { useAppDispatch } from "../../service/store/store";
+import { useEffect } from "react";
+import { clearAppError } from "../../service/store/application/appSlice";
 
 export const UnauthorizedPage: CT<unknown> = () => {
+  const dispatch = useAppDispatch();
+  useEffect(() => {
+    return () => {
+      dispatch(clearAppError());
+    };
+  }, []);
   return (
     <>
       <PageTemplate>

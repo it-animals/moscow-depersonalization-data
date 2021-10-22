@@ -54,7 +54,7 @@ export const Header: CT<unknown> = () => {
           <Toolbar>
             <LogoLink href="/">
               <Typography variant="h6" noWrap component="div">
-                Персонализатор
+                деПерсонализатор
               </Typography>
             </LogoLink>
           </Toolbar>

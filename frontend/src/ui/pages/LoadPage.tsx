@@ -45,6 +45,15 @@ const FormLoader = styled(Loader)`
   z-index: 11;
 `;
 
+const TopLine = styled.div`
+  width: 100%;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 40px;
+`;
+
 export const LoadPage: CT<unknown> = () => {
   const [files, setFiles] = useState<File[]>([]);
   const [processLoad, setProcessLoad] = useState(false);
@@ -77,6 +86,11 @@ export const LoadPage: CT<unknown> = () => {
 
   return (
     <PageTemplate>
+      <TopLine>
+        <Link to={"/"}>
+          <Button variant={"contained"}>К списку пакетов</Button>
+        </Link>
+      </TopLine>
       <UploadContainer {...uploadAnimate}>
         <UploadFile isLoaded={!!files.length} onLoad={loadFileHandler} />
         {processLoad && <FormLoader />}

@@ -11,15 +11,15 @@ export const AppLayout: CT<unknown> = ({ children }) => {
   useGlobalRequestConfiguration();
   return (
     <>
-      <GlobalStyle />
-      <ErrorBoundary>
-        {/*Отлов ошибок api */}
-        <RequestInterceptor>
-          <Router>
+      <Router>
+        <GlobalStyle />
+        <ErrorBoundary>
+          {/*Отлов ошибок api */}
+          <RequestInterceptor>
             <ThemeProvider theme={MUITheme}>{children}</ThemeProvider>
-          </Router>
-        </RequestInterceptor>
-      </ErrorBoundary>
+          </RequestInterceptor>
+        </ErrorBoundary>
+      </Router>
     </>
   );
 };

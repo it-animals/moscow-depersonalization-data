@@ -1,15 +1,6 @@
 import { PageTemplate } from "../components/templates/PageTemplate";
 import styled from "styled-components";
 import Slider from "react-slick";
-
-import Image1 from "../../assets/anketa-uchastnika-nacionalnoj-motocikletnoj-federacii.jpeg";
-import Image2 from "../../assets/images.png";
-import Image3 from "../../assets/1547052708_kartinki-krasivye-priroda005.jpeg";
-import Image4 from "../../assets/image_2021-10-19_13-38-17.png";
-import Image5 from "../../assets/1547366815_1.jpeg";
-import Image6 from "../../assets/image_2021-10-14_15-33-13.png";
-import Image7 from "../../assets/multfilm_lyagushka_32117.jpeg";
-import Image8 from "../../assets/tatu_na_kljuchice_devushki_malenkie_ptichki_big.jpeg";
 import { PageTemplateView } from "../components/templates/PageTemplateView";
 import { useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
@@ -18,7 +9,7 @@ import {
   clearViewFile,
   selectViewFile,
 } from "../../service/store/file/fileViewSlice";
-import { appConfig, isDev } from "../../config";
+import { appConfig } from "../../config";
 
 const Content = styled.div`
   width: 100%;
@@ -78,7 +69,6 @@ export const ViewDocumentPage: CT<unknown> = () => {
           <SliderWrapper>
             {
               //@ts-ignore
-
               <Slider ref={refSlider} {...settings}>
                 {new Array(viewFile.image_pages).fill(0).map((item, i) => (
                   <ImageWrapper key={i}>

@@ -70,12 +70,7 @@ export const FileList: CT<unknown> = () => {
     dispatch(clearFilter());
     setInputSearch("");
   };
-
-  useEffect(() => {
-    (async () => {
-      const data = await fileService.preview(7, 0);
-    })();
-  }, []);
+  
 
   if (!data) return <></>;
 

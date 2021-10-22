@@ -12,7 +12,11 @@ use Yii;
 use yii\rest\Controller;
 use yii\web\NotFoundHttpException;
 use yii\web\UploadedFile;
+use function array_key_exists;
 use function date;
+use function is_dir;
+use function scandir;
+use function var_dump;
 
 class FileController extends Controller
 {
@@ -74,10 +78,18 @@ class FileController extends Controller
     public function actionPreview(int $id, int $page = 0)
     {
         $model = $this->findModel($id);
+        $imagePath = $model->image_path;
         if (!$model->image_path) {
             throw new NotFoundHttpException('Файл не сконвертирован.');
+        } elseif (is_dir($model->image_path)) {
+            $data = scandir($model->image_path);
+            if (!array_key_exists($page + 2, $data)) {
+                throw new NotFoundHttpException('Файл не найден.');
+            }
+
+            $imagePath = $model->image_path . '/' . $data[$page + 2];
         }
-        return Yii::$app->response->sendFile($model->image_path, $model->name, ['inline' => true]);
+        return Yii::$app->response->sendFile($imagePath, $model->name, ['inline' => true]);
     }
 
     protected function findModel($id): File

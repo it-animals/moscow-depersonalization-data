@@ -49,12 +49,11 @@ class ImageParser
         $this->dpi = round($imgWidth * 2.54 / $pdfWidth); //для документа A4
     }
 
-    private function getPdfSize($pdfPath): array
-    {
+    private function getPdfSize($pdfPath): array {
         $command = "pdfinfo {$pdfPath} | grep 'Page size'";
         $search = [];
         $result = exec($command);
-        preg_match("/([\d.]+) x ([\d.]+) (.+)/ui", $result, $search);
+        preg_match("/([\d.]+) x ([\d.]+) ([^ ]+)/ui", $result, $search);
         return [$search[1], $search[2], $search[3]];
     }
 

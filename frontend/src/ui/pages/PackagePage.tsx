@@ -108,10 +108,23 @@ export const PackagePage: CT<unknown> = () => {
         }}
       >
         <Link to={"/"}>
-          <Button variant={"contained"}>К списку пакетов</Button>
+          <Button
+            variant={"contained"}
+            onClick={() => {
+              clearTimeout(timeout);
+            }}
+          >
+            К списку пакетов
+          </Button>
         </Link>
         <Link to={"/load/"}>
-          <Button color={"secondary"} variant={"contained"}>
+          <Button
+            color={"secondary"}
+            onClick={() => {
+              clearTimeout(timeout);
+            }}
+            variant={"contained"}
+          >
             Создать пакет
           </Button>
         </Link>

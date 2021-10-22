@@ -22,67 +22,169 @@ class ImageParser {
      * @var string
      */
     private string $resultPath;
+    /**
+     * PDI исходного изображения
+     * @var float
+     */
+    private float $dpi;
 
     public function __construct(string $imagePath, string $pdfPath, string $resultPath) {
         $this->imagePath = $imagePath;
         $this->pdfPath = $pdfPath;
         $this->resultPath = $resultPath;
+
+        $pdfSize = $this->getPdfSize($pdfPath);
+        $pdfWidth = min($pdfSize[0], $pdfSize[1]); //ищем ширину листа в Pdf
+        if($pdfSize[2] == 'pts') {
+            $pdfWidth *=  0.0352778; //переводим в см
+        }
+        $imgSize = getimagesize($this->imagePath);
+
+        $imgWidth = min($imgSize[0], $imgSize[1]); //ищем ширину листа
+        $this->dpi = round($imgWidth * 2.54 / $pdfWidth); //для документа A4
     }
 
+    private function getPdfSize($pdfPath): array {
+        $command = "pdfinfo {$pdfPath} | grep 'Page size'";
+        $search = [];
+        $result = exec($command);
+        preg_match("/([\d.]+) x ([\d.]+) (.+)/ui", $result, $search);
+        return [$search[1], $search[2], $search[3]];
+    }
+    /**
+     * Парсинг файла
+     * @return bool
+     */
     public function parse(): bool {
-        $pdns = $this->pdfToPdn($this->pdfPath);
-        $this->hidePDnInImage($this->imagePath, $this->resultPath, $pdns);
+        $pdns = $this->findPdns($this->pdfPath);
+        var_dump($pdns);
+        $words = $this->findWords($this->pdfPath, $pdns);
+        $this->hidePDnInImage($this->imagePath, $this->resultPath, $words);
+        return true;
+    }
+    /**
+     * Поиск ПДн в pdf файле
+     * @param string $pdfPath путь до pdf файла
+     * @return array
+     */
+    private function findPdns(string $pdfPath): array {
+        $content = [];
+        exec("pdftotext -r {$this->dpi}  $pdfPath -", $content);
+        $text = implode(' ', $content);
+        return $this->findPdnInRow($text);
+    }
+    /**
+     * Поиск ПДн в строке
+     * @param string $row строка
+     * @return array
+     */
+    private function findPdnInRow(string $row): array {
+        $result = [];
+        $matches = [];
+        preg_match_all('/[А-ЯЁ][.,] {0,5}[А-ЯЁ][.,] {0,5}[А-ЯЁ][а-яё]{2,25}/u', $row, $matches);
+        if($matches) {
+            $result = array_merge($result, $matches[0]);
+        }
+        preg_match_all('/[А-ЯЁ][а-яё]{2,25} {0,5}[А-ЯЁ][,.] {0,5}[А-ЯЁ][.,]/u', $row, $matches);
+        if($matches) {
+            $result = array_merge($result, $matches[0]);
+        }
+        preg_match_all('/[А-ЯЁ][а-яё]{2,25} {0,5}[А-ЯЁ][а-яё]{2,10} {0,5}[А-ЯЁ][а-яё]{2,20}/u', $row, $matches);
+        if($matches) {
+            $result = array_merge($result, $matches[0]);
+        }
+        $result = array_filter($result, function($pdn) {
+            if(preg_match("/Правительств|Москв|Росси/u", $pdn)) {
+                return false;
+            }
+            return true;
+        });
+        return array_map(function($pdn) {
+            return str_replace(',', '', $pdn);
+        }, $result);
     }
 
-    private function pdfToPdn(string $pdfPath): array {
+    /**
+     * Поиск слов, которые необходимы скрыть
+     * @param string $pdfPath путь до pdf файла
+     * @param array $pdns массив ПДн
+     * @return array
+     */
+    private function findWords(string $pdfPath, array $pdns): array {
         $content = [];
-        exec("pdftotext -bbox $pdfPath - | grep word", $content);
+        exec("pdftotext -bbox -r {$this->dpi}  $pdfPath - | grep word", $content);
         $search = [];
         $result = [];
-        foreach($content as $word) {
+        $words = [];
+        foreach($content as $i => $word) {
             preg_match('/\<word xMin="([\d.]+)" yMin="([\d.]+)" xMax="([\d.]+)" yMax="([\d.]+)">(.+)\<\/word\>/u', $word, $search);
-            $data = [
+            $words[] = [
                 'xMin' => $search[1],
                 'yMin' => $search[2],
                 'xMax' => $search[3],
                 'yMax' => $search[4],
                 'word' => $search[5]
             ];
-            if($this->isPDn($data)) {
-                $result[] = $data;
+            if($this->isPDn([$words[$i]['word']], $pdns)) {
+                $result[] = $this->unionWords([$words[$i]]);
+            } elseif($i > 1 &&  $this->isPDn([$words[$i-1]['word'], $words[$i]['word']], $pdns)) {
+                $result[] = $this->unionWords([$words[$i-1], $words[$i]]);
+            } elseif($i > 2 && $this->isPDn([$words[$i-2]['word'], $words[$i-1]['word'], $words[$i]['word']], $pdns)) {
+                $result[] = $this->unionWords([$words[$i-2], $words[$i-1], $words[$i]]);
             }
         }
         return $result;
     }
-    private function isPDn(array &$data): bool {
-        if(preg_match('/[А-ЯЁ]\.[А-ЯЁ]\. {0,5}[А-ЯЁ][а-яё]{2,25}/u', $data['word'])) {
-            $data['word'] = 'И.И. Иванов';
-            return true;
-        }
-        if(preg_match('/[А-ЯЁ][а-яё]{2,25} {0,5}[А-ЯЁ]\.[А-ЯЁ]\./u', $data['word'])) {
-            $data['word'] = 'Иванов И.И.';
-            return true;
-        }
-        if(preg_match('/[А-ЯЁ][а-яё]{2,10} {0,5}[А-ЯЁ][а-яё]{2,20} {0,5}[А-ЯЁ][а-яё]{2,25}/u', $data['word'])) {
-            $data['word'] = 'Иван Иванович Иванов';
-            return true;
-        }
-        if(preg_match('/[А-ЯЁ][а-яё]{2,25} {0,5}[А-ЯЁ][а-яё]{2,10} {0,5}[А-ЯЁ][а-яё]{2,20}/u', $data['word'])) {
-            $data['word'] = 'Иванов Иван Иванович';
-            return true;
-        }
-        return false;
+    /**
+     * Проверка слов, что они составляют ПДн
+     * @param array $words слова
+     * @param array $pdns массив ПДн
+     * @return bool
+     */
+    private function isPDn(array $words, array $pdns): bool {
+        $check = implode(' ', $words);
+        $check = preg_replace('/[^ .а-яё]/ui','',$check);
+        return in_array($check, $pdns);
     }
-
+    /**
+     * Объединение нескольких блоков для единой замены
+     * @param array $words массив заменяемых слов
+     * @return array
+     */
+    private function unionWords(array $words): array {
+        $xMin = $words[0]['xMin'];
+        $yMin = $words[0]['yMin'];
+        $xMax = $words[0]['xMax'];
+        $yMax = $words[0]['yMax'];
+        foreach($words as $word) {
+            $xMin = $xMin > $word['xMin'] ? $word['xMin'] : $xMin;
+            $yMin = $yMin > $word['yMin'] ? $word['yMin'] : $yMin;
+            $xMax = $xMax < $word['xMax'] ? $word['xMax'] : $xMax;
+            $yMax = $yMax < $word['yMax'] ? $word['yMax'] : $yMax;
+        }
+        return [
+            'xMin' => $xMin,
+            'yMin' => $yMin,
+            'xMax' => $xMax,
+            'yMax' => $yMax,
+            'word' => 'ПДн'
+        ];
+    }
+    /**
+     * Обработка файла для скрытия ПДн
+     * @param string $imagePath входная картинка
+     * @param string $resultPath исходящая картинка
+     * @param array $pdns массив скрываемых ПДн
+     */
     private function hidePDnInImage(string $imagePath, string $resultPath, array $pdns) {
         $img = imagecreatefromjpeg($imagePath);
         $white = imagecolorallocate($img, 255, 255, 255);
         $black = imagecolorallocate($img, 0, 0, 0);
         $font_file = '/usr/share/fonts/truetype/freefont/FreeMono.ttf';
-        $k = 1.725;
         foreach($pdns as $pdn) {
-            imagefilledrectangle($img, $k * $pdn['xMin'], $k * $pdn['yMin'], $k * $pdn['xMax'], $k * $pdn['yMax'], $white);
-            imagefttext($img, 12, 0, $k * $pdn['xMin'], $k * $pdn['yMax'] - 2, $black, $font_file, $pdn['word']);
+            imagefilledrectangle($img, $pdn['xMin']-2, $pdn['yMin']-2, $pdn['xMax']+2, $pdn['yMax']+2, $white);
+            imagerectangle($img, $pdn['xMin']-2, $pdn['yMin']-2, $pdn['xMax']+2, $pdn['yMax']+2, $black);
+            imagefttext($img, ($pdn['yMax'] - $pdn['yMin']) * 0.7, 0, $pdn['xMin'], $pdn['yMax'] - 2, $black, $font_file, $pdn['word']);
         }
         imagejpeg($img, $resultPath);
         imagedestroy($img);

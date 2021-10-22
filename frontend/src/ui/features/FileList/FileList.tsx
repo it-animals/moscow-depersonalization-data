@@ -12,6 +12,7 @@ import {
   InputAdornment,
   Paper,
   TextField,
+  Typography,
 } from "@mui/material";
 import { FileItem } from "../../components/fileItem/FileItem";
 import styled from "styled-components";
@@ -35,6 +36,11 @@ const ButtonWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
+`;
+
+const Count = styled.div`
+  width: 100%;
+  margin-bottom: 15px;
 `;
 
 export const FileList: CT<unknown> = () => {

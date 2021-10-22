@@ -8,37 +8,27 @@ export const ErrorBoundary: React.FC<unknown> = ({ children }) => {
   const history = useHistory();
   const appErrors: { [key: number]: VoidFunction } = {
     "0": () => {
-      history.push({
-        pathname: "/error",
-      });
+      history.push("/error");
     },
     "404": () => {
-      history.push({
-        pathname: "/404",
-      });
+      history.push("/404");
     },
     "401": () => {
-      history.push({
-        pathname: "/logout",
-      });
+      history.push("/logout");
     },
     "500": () => {
-      history.push({
-        pathname: "/error",
-      });
+      history.push("/error");
     },
     "403": () => {
-      history.push({
-        pathname: "/403",
-      });
+      history.push("/403");
     },
   };
 
   useEffect(() => {
-    if (!appError) return;
+    if (!appError || !history) return;
     appErrors[appError.status]();
     //eslint-disable-next-line
-  }, [appError]);
+  }, [appError, history]);
 
   return <>{children}</>;
 };

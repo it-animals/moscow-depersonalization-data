@@ -45,6 +45,15 @@ const FormLoader = styled(Loader)`
   z-index: 11;
 `;
 
+const TopLine = styled.div`
+  width: 100%;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+`;
+
 export const PackagePage: CT<unknown> = () => {
   let timeout: TimeoutId;
   const params = useParams<{ packageId?: string }>();
@@ -87,6 +96,16 @@ export const PackagePage: CT<unknown> = () => {
   console.log(history.location.pathname);
   return (
     <PageTemplate>
+      <TopLine>
+        <Link to={"/"}>
+          <Button variant={"contained"}>К списку пакетов</Button>
+        </Link>
+        <Link to={"/load/"}>
+          <Button color={"secondary"} variant={"contained"}>
+            Создать пакет
+          </Button>
+        </Link>
+      </TopLine>
       {<PackageStatus packageFile={packageFiles ?? null} />}
 
       {packageFiles && history.location.pathname !== "/load/" && <FileList />}

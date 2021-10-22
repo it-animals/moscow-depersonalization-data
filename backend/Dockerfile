@@ -14,4 +14,5 @@ RUN sed -i '/disable ghostscript format types/,+6d' /etc/ImageMagick-6/policy.xm
 
 RUN apt-get update && \
     apt-get -y install \
-        poppler-utils
+        poppler-utils \
+        pdftk

@@ -8,6 +8,9 @@ use app\modules\v1\traits\OptionsActionTrait;
 use yii\helpers\ArrayHelper;
 use yii\rest\Controller;
 use yii\web\NotFoundHttpException;
+use function count;
+use function is_dir;
+use function scandir;
 
 class TaskController extends Controller
 {
@@ -27,7 +30,17 @@ class TaskController extends Controller
         $task = $this->findModel($id);
 
         $result = ArrayHelper::toArray($task);
-        $result['files'] = $task->getFiles()->asArray()->all();
+        $files = $task->getFiles()->asArray()->all();
+        foreach ($files as $key => $file) {
+            if (is_dir($file['image_path'])) {
+                $previewDir = scandir($file['image_path'] . '/jpg');
+                $file['image_pages'] = count($previewDir) > 2 ? count($previewDir) - 2 : 0;
+            } else {
+                $file['image_pages'] = 0;
+            }
+            $files[$key] = $file;
+        }
+        $result['files'] = $files;
 
         return $result;
     }

@@ -71,7 +71,7 @@ class FileController extends Controller
         ];
     }
 
-    public function actionPreview(int $id)
+    public function actionPreview(int $id, int $page = 0)
     {
         $model = $this->findModel($id);
         if (!$model->image_path) {

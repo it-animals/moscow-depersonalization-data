@@ -21,13 +21,14 @@ const Container = styled(motion(Paper))`
   padding: 20px;
   display: flex;
   min-height: 150px;
-  justify-content: center;
+  justify-content: space-between;
   flex-direction: column;
   cursor: pointer;
   position: relative;
 
   & h6 {
     overflow: hidden;
+    word-break: break-all;
     text-overflow: ellipsis;
     display: -webkit-box;
     -webkit-line-clamp: 2; /* number of lines to show */

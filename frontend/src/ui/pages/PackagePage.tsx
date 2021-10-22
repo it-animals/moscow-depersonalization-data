@@ -97,7 +97,6 @@ export const PackagePage: CT<unknown> = () => {
     };
   }, []);
 
-  console.log(history.location.pathname);
   return (
     <PageTemplate>
       <TopLine

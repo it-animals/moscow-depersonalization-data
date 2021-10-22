@@ -20,6 +20,7 @@ import { motion } from "framer-motion";
 import SearchIcon from "@mui/icons-material/Search";
 import { upToDownAnimate } from "../../lib/animations/upToDownAnimate";
 import { useEffect, useState } from "react";
+import { fileService } from "../../../service/file/fileService";
 
 const SearchLine = styled(motion.div)`
   min-height: 60px;
@@ -69,6 +70,12 @@ export const FileList: CT<unknown> = () => {
     dispatch(clearFilter());
     setInputSearch("");
   };
+
+  useEffect(() => {
+    (async () => {
+      const data = await fileService.preview(7, 0);
+    })();
+  }, []);
 
   if (!data) return <></>;
 

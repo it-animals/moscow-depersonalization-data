@@ -11,4 +11,8 @@ export const fileService = {
     });
     return axios.post<{ task_id: number }>(this.path + "upload", data);
   },
+  preview(id: number, page: number) {
+    ///v1/file/preview?id=1&page=0
+    return axios.get<any>(this.path + `preview?id=${id}&page=${page}`);
+  },
 };

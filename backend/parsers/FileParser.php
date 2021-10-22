@@ -5,6 +5,7 @@ namespace app\parsers;
 use Yii;
 use yii\helpers\FileHelper;
 use function dirname;
+use function pathinfo;
 use function var_dump;
 
 /**
@@ -80,9 +81,12 @@ class FileParser
         $command1 = "pdftk '{$inputPath}' burst output {$inputFolder}/%d.pdf 2>&1";
         exec($command1, $logs);
         foreach (glob("$inputFolder/*.pdf") as $pdfPath) {
-            $command2 = "pdfimages -j -f 1 -l 1 $pdfPath $imageFolder/";
+            //$command2 = "pdfimages -j -f 1 -l 1 $pdfPath $imageFolder/";
+            $pathinfo = pathinfo($pdfPath);
+            $command2 = "convert -density 300 $pdfPath -quality 100 $imageFolder/{$pathinfo['filename']}.jpg";
             exec($command2, $logs);
-            $imgPath = $imageFolder . '/-000.jpg';
+            //$imgPath = $imageFolder . '/-000.jpg';
+            $imgPath = $imageFolder . "/{$pathinfo['filename']}.jpg";
             $resultPath = $resultFolder . '/' . str_replace('.pdf', '.jpg', basename($pdfPath));
             $imgParser = new ImageParser($imgPath, $pdfPath, $resultPath);
             $imgParser->parse();

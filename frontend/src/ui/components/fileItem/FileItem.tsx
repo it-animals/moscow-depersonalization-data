@@ -6,6 +6,8 @@ import { upToDownAnimate } from "../../lib/animations/upToDownAnimate";
 import { Link } from "react-router-dom";
 import { Loop } from "@mui/icons-material";
 import { NearbyErrorOutlined } from "@mui/icons-material";
+import { useAppDispatch } from "../../../service/store/store";
+import { setViewFile } from "../../../service/store/file/fileViewSlice";
 
 const rotate = keyframes`
   from {
@@ -21,13 +23,14 @@ const Container = styled(motion(Paper))`
   padding: 20px;
   display: flex;
   min-height: 150px;
-  justify-content: center;
+  justify-content: space-between;
   flex-direction: column;
   cursor: pointer;
   position: relative;
 
   & h6 {
     overflow: hidden;
+    word-break: break-all;
     text-overflow: ellipsis;
     display: -webkit-box;
     -webkit-line-clamp: 2; /* number of lines to show */
@@ -80,6 +83,12 @@ export const FileItem: CT<{ item: FileType; showAnimate: boolean }> = ({
   item,
   showAnimate,
 }) => {
+  const dispatch = useAppDispatch();
+
+  const clickHandler = () => {
+    dispatch(setViewFile(item));
+  };
+
   if (fileError(item)) {
     return (
       <Container
@@ -129,6 +138,7 @@ export const FileItem: CT<{ item: FileType; showAnimate: boolean }> = ({
       <Typography variant={"h6"}>{item.name}</Typography>
       <Link to={`/view/${item.id}/1`}>
         <Button
+          onClick={clickHandler}
           style={{ marginTop: 10 }}
           variant={"contained"}
           color={"secondary"}

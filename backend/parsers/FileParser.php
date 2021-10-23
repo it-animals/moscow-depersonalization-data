@@ -16,6 +16,7 @@ use function pathinfo;
 use function preg_replace;
 use function str_replace;
 use function trim;
+use function var_dump;
 
 /**
  * Парсер персональных данных в pdf
@@ -78,7 +79,6 @@ class FileParser
 
     public function parsePdf(string $inputPath): bool
     {
-
         $inputFolder = Yii::getAlias("{$this->path}/input");
         if (!file_exists($inputFolder)) {
             mkdir($inputFolder);
@@ -103,7 +103,7 @@ class FileParser
             $imgPath = $imageFolder . "/{$pathinfo['filename']}.jpg";
             $resultPath = $resultFolder . '/' . str_replace('.pdf', '.jpg', basename($pdfPath));
             if($this->pdfWithoutText) { //получаем pdf с текстом
-                $command3 = "tesseract -l rus+eng '{$imgPath} {$inputFolder}/out pdf";
+                $command3 = "tesseract -l rus+eng '{$imgPath}' {$inputFolder}/out pdf";
                 exec($command3, $logs);
                 $pdfPath = $inputFolder.'/out.pdf';
             }

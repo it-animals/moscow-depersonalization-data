@@ -110,7 +110,14 @@ class FileParser
             $imgParser = new ImageParser($imgPath, $pdfPath, $resultPath);
             $imgParser->parse();
         }
+
+        $command4 = "convert '{$resultFolder}/*.jpg' '{$this->path}/output.pdf'";
+        exec($command4, $logs);
+
         FileHelper::removeDirectory($inputFolder);
+
+        $tmpFolder = Yii::getAlias("{$this->path}/tmp");
+        FileHelper::removeDirectory($tmpFolder);
         //FileHelper::removeDirectory($imageFolder);
         //FileHelper::removeDirectory($resultFolder);
         echo $resultFolder, "\n";

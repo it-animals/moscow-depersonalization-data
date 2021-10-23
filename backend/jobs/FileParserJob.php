@@ -29,7 +29,8 @@ class FileParserJob extends BaseObject implements JobInterface
         try {
             if ($parser->parse()) {
                 $file->status = File::STATUS_DONE;
-                $file->image_path = dirname($file->base_path) . "/result";
+                $file->image_path = dirname($file->base_path) . "/image";
+                $file->result_path = dirname($file->base_path) . "/result";
                 $file->date_end = date('d.m.Y H:i:s');
                 $file->save();
             } else {

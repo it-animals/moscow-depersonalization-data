@@ -22,9 +22,9 @@ yarn-install:
 yarn-build:
 	(cd frontend && docker-compose run --rm node yarn build)
 migrate:
-	(cd backend && docker-compose exec --user=www-data php yii migrate --interactive=0)
+	(cd backend && docker-compose exec --user=www-data php php yii migrate --interactive=0)
 queue:
-	(cd backend && docker-compose exec --user=www-data -d php yii queue/listen)
+	(cd backend && docker-compose exec --user=www-data -d php php yii queue/listen)
 build:
 	(cd backend && docker-compose build) && \
 	(cd frontend && docker-compose build)

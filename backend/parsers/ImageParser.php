@@ -250,6 +250,7 @@ class ImageParser
      */
     private function hidePDnInImage(string $imagePath, string $resultPath, array $pdns)
     {
+        ini_set('memory_limit', '-1');
         $img = imagecreatefromjpeg($imagePath);
         $white = imagecolorallocate($img, 255, 255, 255);
         $black = imagecolorallocate($img, 0, 0, 0);

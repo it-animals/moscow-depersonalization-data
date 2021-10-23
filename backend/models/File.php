@@ -17,6 +17,7 @@ use Yii;
  * @property string|null $base_path путь до исходного файла
  * @property string|null $result_path путь до итогового файла
  * @property string|null $image_path путь до итогового файла в формате jpg
+ * @property string|null $job_id
  *
  * @property Task $task
  */
@@ -25,6 +26,7 @@ class File extends \yii\db\ActiveRecord
     const STATUS_WORK = 1;
     const STATUS_DONE = 2;
     const STATUS_ERROR = 3;
+    const STATUS_CANCEL = 4;
     /**
      * {@inheritdoc}
      */
@@ -43,7 +45,7 @@ class File extends \yii\db\ActiveRecord
             [['task_id', 'status'], 'default', 'value' => null],
             [['task_id', 'status'], 'integer'],
             [['date_start', 'date_end'], 'safe'],
-            [['base_path', 'result_path', 'image_path'], 'string', 'max' => 10000],
+            [['base_path', 'result_path', 'image_path', 'job_id'], 'string', 'max' => 10000],
             [['task_id'], 'exist', 'skipOnError' => true, 'targetClass' => Task::className(), 'targetAttribute' => ['task_id' => 'id']],
         ];
     }

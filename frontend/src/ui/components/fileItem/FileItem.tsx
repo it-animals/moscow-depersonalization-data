@@ -43,7 +43,6 @@ const Container = styled(motion(Paper))`
   min-height: 225px;
   justify-content: space-between;
   flex-direction: column;
-  cursor: pointer;
   position: relative;
 
   & h6 {
@@ -137,6 +136,7 @@ export const FileItem: CT<{ item: FileType; showAnimate: boolean }> = ({
 
   return (
     <Container
+      title={item.name}
       {...upToDownAnimate}
       transition={{
         delay: showAnimate ? 0.6 : 0,
@@ -173,7 +173,7 @@ export const FileItem: CT<{ item: FileType; showAnimate: boolean }> = ({
         </div>
       )}
       {fileInWork(item) ||
-        (fileAbort(item) && <div style={{ height: 32, marginTop: 10 }}></div>)}
+        (fileAbort(item) && <div style={{ height: 32, marginTop: 10 }} />)}
       {!fileInWork(item) && !fileAbort(item) && (
         <div style={{ position: "relative" }}>
           <Button

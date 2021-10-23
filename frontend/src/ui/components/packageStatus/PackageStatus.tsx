@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import {
   packageAbort,
+  packageCompleted,
   packageError,
   packageInWork,
   PackageType,
@@ -52,7 +53,7 @@ export const PackageStatus: CT<{ packageFile: PackageType | null }> = ({
     const handleClose = () => {
       setOpen(false);
     };
-
+    if (!packageCompleted(item)) return <></>;
     return (
       <div>
         <Button
@@ -87,17 +88,13 @@ export const PackageStatus: CT<{ packageFile: PackageType | null }> = ({
                     id="composition-menu"
                     aria-labelledby="composition-button"
                   >
-                    {!packageInWork(item) &&
-                      !packageAbort(item) &&
-                      !packageError(item) && (
-                        <MenuItem onClick={handleClose}>
-                          <MenuLink
-                            href={`${appConfig.apiUrl}task/download?id=${item.id}&pdf=0`}
-                          >
-                            в .jpeg формате
-                          </MenuLink>
-                        </MenuItem>
-                      )}
+                    <MenuItem onClick={handleClose}>
+                      <MenuLink
+                        href={`${appConfig.apiUrl}task/download?id=${item.id}&pdf=0`}
+                      >
+                        в .jpeg формате
+                      </MenuLink>
+                    </MenuItem>
 
                     <MenuItem onClick={handleClose}>
                       <MenuLink

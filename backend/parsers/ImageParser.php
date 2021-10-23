@@ -31,6 +31,7 @@ use function round;
 use function str_replace;
 use function trim;
 use function var_dump;
+use app\models\NameSurname;
 
 /**
  * Парсер персональных данных в изображения страницы
@@ -38,11 +39,7 @@ use function var_dump;
  * @author restlin
  */
 class ImageParser
-{
-    /**
-     * путь до исходного файла со словами в формате .txt
-     */
-    const DICT_PATH = __DIR__ . '/words.txt';
+{    
     /**
      * исходный файл в формате картинки
      * @var string
@@ -83,9 +80,7 @@ class ImageParser
         $imgSize = getimagesize($this->imagePath);
 
         $imgWidth = min($imgSize[0], $imgSize[1]); //ищем ширину листа
-        $this->dpi = round($imgWidth * 2.54 / $pdfWidth); //для документа A4
-
-        $this->loadWords();
+        $this->dpi = round($imgWidth * 2.54 / $pdfWidth);
     }
 
     private function getPdfSize($pdfPath): array
@@ -187,12 +182,22 @@ class ImageParser
                 'yMax' => $search[4],
                 'word' => $search[5]
             ];
+            $startWithBig = preg_match('/^[А-ЯЁ]/u', $words[$i]['word']) ? true : false;
+            $base = mb_strtolower($words[$i]['word'], 'UTF-8');
+            $base = str_replace('ё', 'е', $base);
+            $length = mb_strlen($base, 'UTF-8');            
             if ($this->isPDn([$words[$i]['word']], $pdns)) {
                 $result[] = $this->unionWords([$words[$i]]);
             } elseif ($i > 1 && $this->isPDn([$words[$i - 1]['word'], $words[$i]['word']], $pdns)) {
                 $result[] = $this->unionWords([$words[$i - 1], $words[$i]]);
             } elseif ($i > 2 && $this->isPDn([$words[$i - 2]['word'], $words[$i - 1]['word'], $words[$i]['word']], $pdns)) {
                 $result[] = $this->unionWords([$words[$i - 2], $words[$i - 1], $words[$i]]);
+            } elseif($length > 3 && $startWithBig && preg_match("/(вич|вича|вичу|вичем|виче|евна|евны|евне|евну|евной|евне)\W{0,}$/u", $base)) { //поиск отчеств по окончаниям
+                echo $base, "<br>";
+                $result[] = $this->unionWords([$words[$i]]);
+            } elseif($length > 1 && $startWithBig && NameSurname::findOne(['word' => $base])) { //поиск имен и фамилий по словарю
+                echo $base, "<br>"; 
+                $result[] = $this->unionWords([$words[$i]]);
             }
         }
         return $result;
@@ -257,26 +262,5 @@ class ImageParser
         }
         imagejpeg($img, $resultPath);
         imagedestroy($img);
-    }
-
-    /**
-     * Загрузка словарика
-     * @return boolean
-     * @throws \Exception
-     */
-    private function loadWords()
-    {
-        if (self::$words) {
-            return true;
-        }
-        if (file_exists(self::DICT_PATH) && ($filein = @fopen(self::DICT_PATH, 'r'))) {
-            while (($word = fgets($filein)) !== false) {
-                $base = str_replace('ё', 'е', trim($word));
-                self::$words[$base] = true;
-            }
-            fclose($filein);
-        } else {
-            throw new \Exception('Не могу найти или открыть исходный файл словаря');
-        }
     }
 }

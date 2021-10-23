@@ -144,7 +144,14 @@ export const FileItem: CT<{ item: FileType; showAnimate: boolean }> = ({
         ease: ["easeInOut"],
       }}
     >
-      <Typography fontWeight={"bold"} variant={"h6"}>
+      <Typography
+        style={{
+          display: "block",
+          minHeight: 96,
+        }}
+        fontWeight={"bold"}
+        variant={"h6"}
+      >
         {item.name}
       </Typography>
       <Typography style={{ marginTop: 10 }} fontWeight={"bold"} variant={"h6"}>
@@ -165,7 +172,9 @@ export const FileItem: CT<{ item: FileType; showAnimate: boolean }> = ({
           </Button>
         </div>
       )}
-      {!fileInWork(item) && (
+      {fileInWork(item) ||
+        (fileAbort(item) && <div style={{ height: 32, marginTop: 10 }}></div>)}
+      {!fileInWork(item) && !fileAbort(item) && (
         <div style={{ position: "relative" }}>
           <Button
             ref={anchorRef}
@@ -182,6 +191,7 @@ export const FileItem: CT<{ item: FileType; showAnimate: boolean }> = ({
             role={undefined}
             placement="bottom-start"
             transition
+            style={{ zIndex: 111 }}
             anchorEl={anchorRef.current}
             disablePortal
           >

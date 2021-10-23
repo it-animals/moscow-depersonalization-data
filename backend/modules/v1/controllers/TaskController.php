@@ -30,7 +30,7 @@ class TaskController extends Controller
         $task = $this->findModel($id);
 
         $result = ArrayHelper::toArray($task);
-        $files = $task->getFiles()->asArray()->all();
+        $files = $task->getFiles()->orderBy('id')->asArray()->all();
         foreach ($files as $key => $file) {
             if (is_dir($file['image_path'])) {
                 $previewDir = scandir($file['image_path']);

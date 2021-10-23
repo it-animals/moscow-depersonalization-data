@@ -2,13 +2,16 @@
 
 namespace app\modules\v1\controllers;
 
+use app\models\File;
 use app\models\Task;
 use app\modules\v1\helpers\BehaviorHelper;
 use app\modules\v1\traits\OptionsActionTrait;
 use yii\helpers\ArrayHelper;
+use yii\queue\db\Queue;
 use yii\rest\Controller;
 use yii\web\NotFoundHttpException;
 use function count;
+use function date;
 use function is_dir;
 use function scandir;
 
@@ -20,9 +23,28 @@ class TaskController extends Controller
     {
         return BehaviorHelper::api(parent::behaviors(), [
             'GET' => [
-                BehaviorHelper::AUTH_NOT_REQUIRED => ['view', 'list'],
+                BehaviorHelper::AUTH_NOT_REQUIRED => ['view', 'list', 'cancel'],
             ],
         ]);
+    }
+
+    public function actionCancel(int $id)
+    {
+        $model = $this->findModel($id);
+        /* @var $queue Queue */
+        $queue = Yii::$app->queue;
+        foreach ($model->files as $file) {
+            $queue->remove($file->job_id);
+            $file->status = File::STATUS_CANCEL;
+            $file->date_end = date('d.m.Y H:i:s');
+            $file->save(true, ['status', 'date_end']);
+        }
+        $model->status = File::STATUS_CANCEL;
+        $model->date_end = date('d.m.Y H:i:s');
+        $model->save(true, ['status', 'date_end']);
+        return [
+            'status' => 200,
+        ];
     }
 
     public function actionView(int $id)

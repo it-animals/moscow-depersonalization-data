@@ -23,6 +23,7 @@ class m211019_102030_create_file_table extends Migration
             'base_path' => $this->string(10000)->comment('путь до исходного файла'),
             'result_path' => $this->string(10000)->comment('путь до итогового файла'),
             'image_path' => $this->string(10000)->comment('путь до итогового файла в формате jpg'),
+            'job_id' => $this->string(10000)->comment('job id'),
         ]);
 
         $this->addForeignKey('fk_file__task_id', 'file', 'task_id', 'task', 'id', 'CASCADE', 'CASCADE');

@@ -9,6 +9,7 @@ use app\modules\v1\helpers\BehaviorHelper;
 use app\modules\v1\traits\OptionsActionTrait;
 use app\services\FileService;
 use Yii;
+use yii\queue\db\Queue;
 use yii\rest\Controller;
 use yii\web\NotFoundHttpException;
 use yii\web\UploadedFile;
@@ -16,7 +17,6 @@ use function array_key_exists;
 use function date;
 use function is_dir;
 use function scandir;
-use function var_dump;
 
 class FileController extends Controller
 {
@@ -37,9 +37,23 @@ class FileController extends Controller
                 BehaviorHelper::AUTH_NOT_REQUIRED => ['upload'],
             ],
             'GET' => [
-                BehaviorHelper::AUTH_NOT_REQUIRED => ['preview', 'image'],
+                BehaviorHelper::AUTH_NOT_REQUIRED => ['preview', 'image', 'cancel'],
             ],
         ]);
+    }
+
+    public function actionCancel(int $id)
+    {
+        $model = $this->findModel($id);
+        /* @var $queue Queue */
+        $queue = Yii::$app->queue;
+        $queue->remove($model->job_id);
+        $model->status = File::STATUS_CANCEL;
+        $model->date_end = date('d.m.Y H:i:s');
+        $model->save(true, ['status', 'date_end']);
+        return [
+            'status' => 200,
+        ];
     }
 
     public function actionUpload()
@@ -67,7 +81,11 @@ class FileController extends Controller
         }
 
         foreach ($task->files as $file) {
-            Yii::$app->queue->push(new FileParserJob(['fileId' => $file->id]));
+            /* @var $queue Queue */
+            $queue = Yii::$app->queue;
+            $jobId = $queue->push(new FileParserJob(['fileId' => $file->id]));
+            $file->job_id = $jobId;
+            $file->save(true, ['job_id']);
         }
 
         return [

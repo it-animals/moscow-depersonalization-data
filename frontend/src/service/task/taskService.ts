@@ -25,4 +25,8 @@ export const taskService = {
     this.source.cancel("stop");
     this.updateToken();
   },
+
+  abort(id: number) {
+    return axios.get(this.path + `cancel?id=${id}`);
+  },
 };

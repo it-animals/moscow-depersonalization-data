@@ -17,6 +17,8 @@
     "@types/react-dom": "^16.9.0",
     "@types/react-redux": "^7.1.7",
     "axios": "^0.23.0",
+    "dotenv": "^10.0.0",
+    "env-cmd": "^10.1.0",
     "formik": "^2.2.9",
     "motion": "^10.3.2",
     "prettier": "^2.4.1",

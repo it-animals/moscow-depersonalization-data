@@ -16,7 +16,7 @@ status:
 bash:
 	(cd backend && docker-compose exec --user=www-data php bash)
 composer-install:
-	(cd backend && docker-compose exec --user=www-data php composer install)
+	(cd backend && docker-compose exec php composer install)
 yarn-install:
 	(cd frontend && docker-compose run --rm node yarn install)
 yarn-build:

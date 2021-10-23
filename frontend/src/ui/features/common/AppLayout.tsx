@@ -6,6 +6,7 @@ import { GlobalStyle } from "../../styles/_global";
 import { ThemeProvider } from "@mui/material";
 import { MUITheme } from "../../styles/_MUITheme";
 import { useGlobalRequestConfiguration } from "../hooks/useGlobalRequestConfiguration";
+import { LoadContextProvider } from "./LoadContextProvider";
 
 export const AppLayout: CT<unknown> = ({ children }) => {
   useGlobalRequestConfiguration();
@@ -14,10 +15,12 @@ export const AppLayout: CT<unknown> = ({ children }) => {
       <Router>
         <GlobalStyle />
         <ErrorBoundary>
-          {/*Отлов ошибок api */}
-          <RequestInterceptor>
-            <ThemeProvider theme={MUITheme}>{children}</ThemeProvider>
-          </RequestInterceptor>
+          <LoadContextProvider>
+            {/*Отлов ошибок api */}
+            <RequestInterceptor>
+              <ThemeProvider theme={MUITheme}>{children}</ThemeProvider>
+            </RequestInterceptor>
+          </LoadContextProvider>
         </ErrorBoundary>
       </Router>
     </>

@@ -2,7 +2,7 @@ import { PageTemplate } from "../components/templates/PageTemplate";
 import { UploadFile } from "../features/UploadFile/UploadFile";
 import styled from "styled-components";
 import { Button, Grid, Paper, useTheme } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { fileService } from "../../service/file/fileService";
 import { motion } from "framer-motion";
 import { upToDownAnimate } from "../lib/animations/upToDownAnimate";
@@ -20,6 +20,12 @@ import { Link, useHistory, useParams } from "react-router-dom";
 import { packageCompleted } from "../../domain/package";
 import { PackageStatus } from "../components/packageStatus/PackageStatus";
 import { TimeoutId } from "@reduxjs/toolkit/dist/query/core/buildMiddleware/types";
+import {
+  LoadContextProvider,
+  loadContextData,
+  LoadContextType,
+  LoadContext,
+} from "../features/common/LoadContextProvider";
 
 const UploadContainer = styled(motion(Paper))`
   width: 100%;
@@ -59,7 +65,7 @@ const StatusWrapper = styled(motion.div)`
 `;
 
 export const PackagePage: CT<unknown> = () => {
-  let timeout: TimeoutId;
+  const contextLoad = useContext<LoadContextType>(LoadContext);
   const params = useParams<{ packageId?: string }>();
 
   const dispath = useAppDispatch();
@@ -76,7 +82,7 @@ export const PackagePage: CT<unknown> = () => {
         const task = await taskService.view(Number(params.packageId));
         dispath(setPackage(task.data));
         if (task.data.status === 1) {
-          timeout = setTimeout(load, 1500);
+          loadContextData.setLoad(setTimeout(load, 1500));
         }
       } catch (e) {
         console.log(e);
@@ -92,7 +98,7 @@ export const PackagePage: CT<unknown> = () => {
 
   useEffect(() => {
     return () => {
-      clearTimeout(timeout);
+      loadContextData.clearLoad();
       dispath(clearAllPackage());
     };
   }, []);
@@ -107,27 +113,29 @@ export const PackagePage: CT<unknown> = () => {
           ease: ["easeIn"],
         }}
       >
-        <Link to={"/"}>
+        <a href={"/"}>
           <Button
             variant={"contained"}
             onClick={() => {
-              clearTimeout(timeout);
+              taskService.stop();
+              loadContextData.clearLoad();
             }}
           >
             К списку пакетов
           </Button>
-        </Link>
-        <Link to={"/load/"}>
+        </a>
+        <a href={"/load/"}>
           <Button
             color={"secondary"}
             onClick={() => {
-              clearTimeout(timeout);
+              taskService.stop();
+              loadContextData.clearLoad();
             }}
             variant={"contained"}
           >
             Создать пакет
           </Button>
-        </Link>
+        </a>
       </TopLine>
       {
         <StatusWrapper

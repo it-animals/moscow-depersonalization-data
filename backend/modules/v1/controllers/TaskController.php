@@ -6,14 +6,24 @@ use app\models\File;
 use app\models\Task;
 use app\modules\v1\helpers\BehaviorHelper;
 use app\modules\v1\traits\OptionsActionTrait;
+use Yii;
 use yii\helpers\ArrayHelper;
+use yii\helpers\FileHelper;
 use yii\queue\db\Queue;
 use yii\rest\Controller;
 use yii\web\NotFoundHttpException;
+use ZipArchive;
 use function count;
 use function date;
+use function dirname;
+use function file_exists;
+use function glob;
 use function is_dir;
+use function pathinfo;
 use function scandir;
+use function touch;
+use function unlink;
+use function var_dump;
 
 class TaskController extends Controller
 {
@@ -23,9 +33,42 @@ class TaskController extends Controller
     {
         return BehaviorHelper::api(parent::behaviors(), [
             'GET' => [
-                BehaviorHelper::AUTH_NOT_REQUIRED => ['view', 'list', 'cancel'],
+                BehaviorHelper::AUTH_NOT_REQUIRED => ['view', 'list', 'cancel', 'download'],
             ],
         ]);
+    }
+
+    public function actionDownload(int $id, int $pdf = 1)
+    {
+        $model = $this->findModel($id);
+        $path = Yii::getAlias('@runtime/task/');
+        FileHelper::createDirectory($path);
+        if (file_exists($path . $id)) {
+            unlink($path . $id);
+        }
+        touch($path . $id);
+
+        $zip = new ZipArchive();
+        $zip->open($path . $id, ZipArchive::CREATE);
+        foreach ($model->files as $file) {
+
+            if ($pdf == 1) {
+                $output = dirname($file->base_path) . "/output.pdf";
+                if (file_exists($output)) {
+                    $zip->addFile($output, "{$file->name}");
+                }
+            } else {
+                foreach (glob($file->result_path . '/*.jpg') as $item) {
+                    $info = pathinfo($item);
+
+                    $zip->addFile($item, "{$file->id}/{$info['basename']}");
+                }
+
+            }
+        }
+        $zip->close();
+
+        return Yii::$app->response->sendFile($path . $id, "task-{$id}.zip", ['inline' => false]);
     }
 
     public function actionCancel(int $id)

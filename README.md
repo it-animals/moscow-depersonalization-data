@@ -2,6 +2,9 @@
 
 <b>Задача 9. Автоматизированный алгоритм обезличивания данных</b>
 
+[![Latest Stable Version](https://poser.pugx.org/it-animals/moscow-depersonalization-data/v/stable.png)]()
+[![Total Downloads](https://poser.pugx.org/it-animals/moscow-depersonalization-data/downloads.png)]()
+
 ## Требования
 
 - Ubuntu 20.04

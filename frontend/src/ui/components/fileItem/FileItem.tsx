@@ -146,7 +146,6 @@ export const FileItem: CT<{ item: FileType; showAnimate: boolean }> = ({
     >
       <Typography
         style={{
-          display: "block",
           minHeight: 96,
         }}
         fontWeight={"bold"}

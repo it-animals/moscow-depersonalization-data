@@ -3,6 +3,34 @@
 namespace app\parsers;
 
 use Yii;
+use function array_filter;
+use function array_map;
+use function array_merge;
+use function exec;
+use function explode;
+use function fclose;
+use function fgets;
+use function file_exists;
+use function fopen;
+use function getimagesize;
+use function imagecolorallocate;
+use function imagecreatefromjpeg;
+use function imagedestroy;
+use function imagefilledrectangle;
+use function imagefttext;
+use function imagejpeg;
+use function imagerectangle;
+use function implode;
+use function in_array;
+use function key_exists;
+use function min;
+use function preg_match;
+use function preg_match_all;
+use function preg_replace;
+use function round;
+use function str_replace;
+use function trim;
+use function var_dump;
 
 /**
  * Парсер персональных данных в изображения страницы
@@ -11,6 +39,10 @@ use Yii;
  */
 class ImageParser
 {
+    /**
+     * путь до исходного файла со словами в формате .txt
+     */
+    const DICT_PATH = __DIR__ . '/words.txt';
     /**
      * исходный файл в формате картинки
      * @var string
@@ -31,6 +63,11 @@ class ImageParser
      * @var float
      */
     private float $dpi;
+    /**
+     * Словарь
+     * @var array
+     */
+    private static array $words = [];
 
     public function __construct(string $imagePath, string $pdfPath, string $resultPath)
     {
@@ -47,13 +84,21 @@ class ImageParser
 
         $imgWidth = min($imgSize[0], $imgSize[1]); //ищем ширину листа
         $this->dpi = round($imgWidth * 2.54 / $pdfWidth); //для документа A4
+
+        $this->loadWords();
     }
 
-    private function getPdfSize($pdfPath): array {
+    private function getPdfSize($pdfPath): array
+    {
         $command = "pdfinfo {$pdfPath} | grep 'Page size'";
         $search = [];
         $result = exec($command);
         preg_match("/([\d.]+) x ([\d.]+) ([^ ]+)/ui", $result, $search);
+        if (!$search) {
+            var_dump($pdfPath);
+            var_dump($result);
+            die(1);
+        }
         return [$search[1], $search[2], $search[3]];
     }
 
@@ -64,7 +109,6 @@ class ImageParser
     public function parse(): bool
     {
         $pdns = $this->findPdns($this->pdfPath);
-        var_dump($pdns);
         $words = $this->findWords($this->pdfPath, $pdns);
         $this->hidePDnInImage($this->imagePath, $this->resultPath, $words);
         return true;
@@ -105,6 +149,12 @@ class ImageParser
             $result = array_merge($result, $matches[0]);
         }
         $result = array_filter($result, function ($pdn) {
+            foreach (explode(' ', $pdn) as $word) {
+                $checkWord = mb_strtolower($word, 'UTF-8');
+                if (key_exists($checkWord, self::$words)) { //слово встречается в словарике
+                    return false;
+                }
+            }
             if (preg_match("/Правительств|Москв|Росси/u", $pdn)) {
                 return false;
             }
@@ -207,5 +257,26 @@ class ImageParser
         }
         imagejpeg($img, $resultPath);
         imagedestroy($img);
+    }
+
+    /**
+     * Загрузка словарика
+     * @return boolean
+     * @throws \Exception
+     */
+    private function loadWords()
+    {
+        if (self::$words) {
+            return true;
+        }
+        if (file_exists(self::DICT_PATH) && ($filein = @fopen(self::DICT_PATH, 'r'))) {
+            while (($word = fgets($filein)) !== false) {
+                $base = str_replace('ё', 'е', trim($word));
+                self::$words[$base] = true;
+            }
+            fclose($filein);
+        } else {
+            throw new \Exception('Не могу найти или открыть исходный файл словаря');
+        }
     }
 }

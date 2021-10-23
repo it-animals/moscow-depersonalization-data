@@ -4,9 +4,18 @@ namespace app\parsers;
 
 use Yii;
 use yii\helpers\FileHelper;
+use function basename;
 use function dirname;
+use function exec;
+use function file_exists;
+use function glob;
+use function implode;
+use function in_array;
+use function mkdir;
 use function pathinfo;
-use function var_dump;
+use function preg_replace;
+use function str_replace;
+use function trim;
 
 /**
  * Парсер персональных данных в pdf
@@ -18,8 +27,10 @@ class FileParser
 {
     private string $inputPath;
     private string $type;
+    private bool $pdfWithoutText = false;
 
     private string $path;
+
     public function __construct(string $inputPath)
     {
         $this->inputPath = $inputPath;
@@ -35,22 +46,25 @@ class FileParser
 
     public function parse(): bool
     {
+
         $logs = [];
         $tmpFolder = Yii::getAlias("{$this->path}/tmp");
         if (!file_exists($tmpFolder)) {
             mkdir($tmpFolder);
         }
+
         if ($this->type == 'pdf') {
-            //@todo pdf без текста
+            exec("pdftotext '{$this->inputPath}' -", $logs);
+            $this->pdfWithoutText = !trim(implode(' ', $logs)); //проверка, что в pdf нет, текста
             return $this->parsePdf($this->inputPath);
         } elseif ($this->type == 'image') {
-            $command = "tesseract -l rus+eng {$this->inputPath} {$tmpFolder}/out pdf";
+            $command = "tesseract -l rus+eng '{$this->inputPath}' {$tmpFolder}/out pdf";
             exec($command, $logs);
             $pdfPath = $tmpFolder . '/out.pdf';
             $result = $this->parsePdf($pdfPath);
             return $result;
         } elseif ($this->type == 'office') {
-            $command = "export HOME=/tmp && libreoffice --headless --convert-to pdf {$this->inputPath} --outdir {$tmpFolder}";
+            $command = "export HOME=/tmp && libreoffice --headless --convert-to pdf '{$this->inputPath}' --outdir {$tmpFolder}";
             exec($command, $logs);
             $filename = basename($this->inputPath);
             $name = preg_replace('/\..+$/u', '', $filename);
@@ -88,11 +102,16 @@ class FileParser
             //$imgPath = $imageFolder . '/-000.jpg';
             $imgPath = $imageFolder . "/{$pathinfo['filename']}.jpg";
             $resultPath = $resultFolder . '/' . str_replace('.pdf', '.jpg', basename($pdfPath));
+            if($this->pdfWithoutText) { //получаем pdf с текстом
+                $command3 = "tesseract -l rus+eng '{$imgPath} {$inputFolder}/out pdf";
+                exec($command3, $logs);
+                $pdfPath = $inputFolder.'/out.pdf';
+            }
             $imgParser = new ImageParser($imgPath, $pdfPath, $resultPath);
             $imgParser->parse();
         }
-        FileHelper::removeDirectory($imageFolder);
         FileHelper::removeDirectory($inputFolder);
+        //FileHelper::removeDirectory($imageFolder);
         //FileHelper::removeDirectory($resultFolder);
         echo $resultFolder, "\n";
         return true;

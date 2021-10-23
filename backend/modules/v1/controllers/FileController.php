@@ -37,7 +37,7 @@ class FileController extends Controller
                 BehaviorHelper::AUTH_NOT_REQUIRED => ['upload'],
             ],
             'GET' => [
-                BehaviorHelper::AUTH_NOT_REQUIRED => ['preview'],
+                BehaviorHelper::AUTH_NOT_REQUIRED => ['preview', 'image'],
             ],
         ]);
     }
@@ -75,7 +75,7 @@ class FileController extends Controller
         ];
     }
 
-    public function actionPreview(int $id, int $page = 0)
+    public function actionImage(int $id, int $page = 0)
     {
         $model = $this->findModel($id);
         $imagePath = $model->image_path;
@@ -86,8 +86,25 @@ class FileController extends Controller
             if (!array_key_exists($page + 2, $data)) {
                 throw new NotFoundHttpException('Файл не найден.');
             }
+            $page++;
+            $imagePath = $model->image_path . "/{$page}.jpg";
+        }
+        return Yii::$app->response->sendFile($imagePath, $model->name, ['inline' => true]);
+    }
 
-            $imagePath = $model->image_path . '/' . $data[$page + 2];
+    public function actionPreview(int $id, int $page = 0)
+    {
+        $model = $this->findModel($id);
+        $imagePath = $model->result_path;
+        if (!$model->result_path) {
+            throw new NotFoundHttpException('Файл не сконвертирован.');
+        } elseif (is_dir($model->result_path)) {
+            $data = scandir($model->result_path);
+            if (!array_key_exists($page + 2, $data)) {
+                throw new NotFoundHttpException('Файл не найден.');
+            }
+            $page++;
+            $imagePath = $model->result_path . "/{$page}.jpg";
         }
         return Yii::$app->response->sendFile($imagePath, $model->name, ['inline' => true]);
     }

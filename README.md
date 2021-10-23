@@ -26,7 +26,15 @@ git clone https://github.com/it-animals/moscow-depersonalization-data.git
 ```
 
 ```shell
-cd moscow-depersonalization-data
+cd moscow-depersonalization-data/frontend
+```
+
+```shell
+cp .env.example .env
+```
+
+```shell
+cd ..
 ```
 
 ```shell

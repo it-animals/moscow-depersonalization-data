@@ -70,7 +70,6 @@ export const FileList: CT<unknown> = () => {
     dispatch(clearFilter());
     setInputSearch("");
   };
-  
 
   if (!data) return <></>;
 
@@ -114,12 +113,12 @@ export const FileList: CT<unknown> = () => {
       </SearchLine>
       <Grid
         container
-        rowSpacing={5}
+        rowSpacing={2}
         columnSpacing={10}
         justifyContent={"flex-start"}
       >
         {data!.files.map((item) => (
-          <Grid item xs={3} key={item.id}>
+          <Grid item xs={4} key={item.id}>
             <FileItem showAnimate={!existSearch} item={item} />
           </Grid>
         ))}

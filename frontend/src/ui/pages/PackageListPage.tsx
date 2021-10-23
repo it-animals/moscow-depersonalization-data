@@ -3,11 +3,16 @@ import styled from "styled-components";
 import { Button, Grid, Typography } from "@mui/material";
 import { PackageItem } from "../components/packageItem/PackageItem";
 import { Link } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { PackageType } from "../../domain/package";
 import { taskService } from "../../service/task/taskService";
 import { motion } from "framer-motion";
 import { upToDownAnimate } from "../lib/animations/upToDownAnimate";
+import { setPackage } from "../../service/store/package/packageSlice";
+import {
+  LoadContext,
+  loadContextData,
+} from "../features/common/LoadContextProvider";
 
 const TopLine = styled(motion.div)`
   width: 100%;
@@ -22,13 +27,27 @@ const LinePackage = styled(motion(Grid))``;
 
 export const PackageListPage: CT<unknown> = () => {
   const [list, setList] = useState<PackageType[]>([]);
+  const loadContextData = useContext(LoadContext);
 
   useEffect(() => {
     (async () => {
-      const data = await taskService.list();
-      setList(data.data);
+      const load = async () => {
+        try {
+          const data = await await taskService.list();
+          setList(data.data);
+          loadContextData.setLoad(setTimeout(load, 3000));
+        } catch (e) {
+          console.log(e);
+        }
+      };
+      load();
     })();
   }, []);
+
+  const stopLoadHandler = () => {
+    loadContextData.clearLoad();
+    taskService.stop();
+  };
 
   return (
     <PageTemplate>
@@ -47,14 +66,15 @@ export const PackageListPage: CT<unknown> = () => {
         >
           Пакеты документов
         </Typography>
-        <Link to={`/load/`}>
+        <a href={`/load/`}>
           <Button
             variant={"contained"}
+            onClick={stopLoadHandler}
             // color={"secondary"}
           >
             Создать пакет
           </Button>
-        </Link>
+        </a>
       </TopLine>
       {!!list.length && (
         <Grid
@@ -75,7 +95,11 @@ export const PackageListPage: CT<unknown> = () => {
                 item
                 xs={4}
               >
-                <PackageItem id={item.id} status={item.status} />
+                <PackageItem
+                  onShowClick={stopLoadHandler}
+                  id={item.id}
+                  status={item.status}
+                />
               </LinePackage>
             );
           })}

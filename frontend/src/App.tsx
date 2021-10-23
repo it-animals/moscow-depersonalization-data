@@ -8,6 +8,7 @@ import { ForbiddenPage } from "./ui/pages/ForbiddenPage";
 import { ViewDocumentPage } from "./ui/pages/ViewDocumentPage";
 import { PackageListPage } from "./ui/pages/PackageListPage";
 import { LoadPage } from "./ui/pages/LoadPage";
+import { InitialFileViewPage } from "./ui/pages/InitialFileViewPage";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         <Route path={"/load/"} exact component={LoadPage} />
         <Route path={"/package/:packageId"} component={PackagePage} />
         <Route path={"/view/:id/:image"} component={ViewDocumentPage} />
+        <Route path={"/initial/:id/:image"} component={InitialFileViewPage} />
         <Route path={"/error"} component={ErrorPage} />
         <Route path={"/404"} component={NotFoundPage} />
         <Route path={"/403"} component={ForbiddenPage} />

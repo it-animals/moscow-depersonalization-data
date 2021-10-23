@@ -43,7 +43,7 @@ const settings = {
   slidesToShow: 1,
   slidesToScroll: 1,
 };
-export const ViewDocumentPage: CT<unknown> = () => {
+export const InitialFileViewPage: CT<unknown> = () => {
   const params = useParams<{ id: string; image: string }>();
   const viewFile = useAppSelector(selectViewFile);
   const refSlider = useRef(null);
@@ -95,7 +95,7 @@ export const ViewDocumentPage: CT<unknown> = () => {
                 {new Array(viewFile.image_pages).fill(0).map((item, i) => (
                   <ImageWrapper key={i}>
                     <img
-                      src={`${path}file/preview?id=${params.id}&page=${
+                      src={`${path}file/image?id=${params.id}&page=${
                         Number(params.image) - 1
                       }`}
                       alt=""

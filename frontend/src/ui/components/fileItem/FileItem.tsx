@@ -1,13 +1,31 @@
 import styled, { keyframes } from "styled-components";
-import { Button, Paper, Typography } from "@mui/material";
-import { fileError, fileInWork, FileType } from "../../../domain/file";
+import {
+  Button,
+  ClickAwayListener,
+  Grow,
+  MenuItem,
+  MenuList,
+  Paper,
+  Popper,
+  Typography,
+  useTheme,
+} from "@mui/material";
+import {
+  fileAbort,
+  fileError,
+  fileInWork,
+  FileType,
+} from "../../../domain/file";
 import { motion } from "framer-motion";
 import { upToDownAnimate } from "../../lib/animations/upToDownAnimate";
 import { Link } from "react-router-dom";
-import { Loop } from "@mui/icons-material";
+import { KeyboardArrowDownOutlined, Loop } from "@mui/icons-material";
 import { NearbyErrorOutlined } from "@mui/icons-material";
 import { useAppDispatch } from "../../../service/store/store";
 import { setViewFile } from "../../../service/store/file/fileViewSlice";
+import { useRef, useState } from "react";
+import { statusCatalog } from "../../../domain/status";
+import { fileService } from "../../../service/file/fileService";
 
 const rotate = keyframes`
   from {
@@ -22,7 +40,7 @@ const rotate = keyframes`
 const Container = styled(motion(Paper))`
   padding: 20px;
   display: flex;
-  min-height: 150px;
+  min-height: 225px;
   justify-content: space-between;
   flex-direction: column;
   cursor: pointer;
@@ -33,7 +51,7 @@ const Container = styled(motion(Paper))`
     word-break: break-all;
     text-overflow: ellipsis;
     display: -webkit-box;
-    -webkit-line-clamp: 2; /* number of lines to show */
+    -webkit-line-clamp: 3; /* number of lines to show */
     -webkit-box-orient: vertical;
   }
 `;
@@ -79,52 +97,43 @@ const Error = styled.div`
   justify-content: center;
 `;
 
+const MenuLink = styled(Link)`
+  color: black;
+
+  &:active {
+    color: black;
+  }
+`;
+
 export const FileItem: CT<{ item: FileType; showAnimate: boolean }> = ({
   item,
   showAnimate,
 }) => {
+  const [open, setOpen] = useState(false);
+  const anchorRef = useRef<HTMLButtonElement | null>(null);
   const dispatch = useAppDispatch();
+  const theme = useTheme();
 
   const clickHandler = () => {
     dispatch(setViewFile(item));
   };
 
-  if (fileError(item)) {
-    return (
-      <Container
-        {...upToDownAnimate}
-        transition={{
-          delay: showAnimate ? 0.6 : 0,
-          duration: showAnimate ? 0.3 : 0.3,
-          ease: ["easeInOut"],
-        }}
-      >
-        <Typography variant={"h6"}>{item.name}</Typography>
-        <Error>
-          <IconError style={{ width: 45, height: 45 }} />
-          <Typography color={"red"}>Ошибка преобразования</Typography>
-        </Error>
-      </Container>
+  const openHandler = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const abortHandler = () => {
+    const solution = window.confirm(
+      "Вы уверены, что хотите отменить преобразование файла?"
     );
-  }
-  if (fileInWork(item)) {
-    return (
-      <Container
-        {...upToDownAnimate}
-        transition={{
-          delay: showAnimate ? 0.6 : 0,
-          duration: showAnimate ? 0.3 : 0.3,
-          ease: ["easeInOut"],
-        }}
-      >
-        <Typography variant={"h6"}>{item.name}</Typography>
-        <Load>
-          <IconLoad style={{ width: 45, height: 45 }} />
-          <Typography color={"white"}>Преобразование файла...</Typography>
-        </Load>
-      </Container>
-    );
-  }
+    if (solution) {
+      fileService.abort(item.id);
+    }
+  };
 
   return (
     <Container
@@ -135,17 +144,87 @@ export const FileItem: CT<{ item: FileType; showAnimate: boolean }> = ({
         ease: ["easeInOut"],
       }}
     >
-      <Typography variant={"h6"}>{item.name}</Typography>
-      <Link to={`/view/${item.id}/1`}>
-        <Button
-          onClick={clickHandler}
-          style={{ marginTop: 10 }}
-          variant={"contained"}
-          color={"secondary"}
-        >
-          Просмотр
-        </Button>
-      </Link>
+      <Typography fontWeight={"bold"} variant={"h6"}>
+        {item.name}
+      </Typography>
+      <Typography style={{ marginTop: 10 }} fontWeight={"bold"} variant={"h6"}>
+        Статус:{" "}
+        <span style={{ color: theme.palette.secondary.main }}>
+          {statusCatalog[item.status]}
+        </span>
+      </Typography>
+      {fileInWork(item) && (
+        <div>
+          <Button
+            color={"warning"}
+            style={{ marginTop: 10 }}
+            variant={"contained"}
+            onClick={abortHandler}
+          >
+            Отменить
+          </Button>
+        </div>
+      )}
+      {!fileInWork(item) && (
+        <div style={{ position: "relative" }}>
+          <Button
+            ref={anchorRef}
+            onClick={openHandler}
+            style={{ marginTop: 10 }}
+            variant={"contained"}
+            color={"secondary"}
+            endIcon={<KeyboardArrowDownOutlined />}
+          >
+            Просмотр
+          </Button>
+          <Popper
+            open={open}
+            role={undefined}
+            placement="bottom-start"
+            transition
+            anchorEl={anchorRef.current}
+            disablePortal
+          >
+            {({ TransitionProps, placement }) => (
+              <Grow
+                {...TransitionProps}
+                style={{
+                  transformOrigin:
+                    placement === "bottom-start" ? "left top" : "left bottom",
+                }}
+              >
+                <Paper>
+                  <ClickAwayListener onClickAway={handleClose}>
+                    <MenuList
+                      id="composition-menu"
+                      aria-labelledby="composition-button"
+                    >
+                      {!fileError(item) && !fileAbort(item) && (
+                        <MenuItem onClick={handleClose}>
+                          <MenuLink
+                            to={`/view/${item.id}/1`}
+                            onClick={clickHandler}
+                          >
+                            Преобразованные файлы
+                          </MenuLink>
+                        </MenuItem>
+                      )}
+                      <MenuItem onClick={handleClose}>
+                        <MenuLink
+                          to={`/initial/${item.id}/1`}
+                          onClick={clickHandler}
+                        >
+                          Исходные файлы
+                        </MenuLink>
+                      </MenuItem>
+                    </MenuList>
+                  </ClickAwayListener>
+                </Paper>
+              </Grow>
+            )}
+          </Popper>
+        </div>
+      )}
     </Container>
   );
 };

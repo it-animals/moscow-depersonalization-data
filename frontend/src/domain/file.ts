@@ -3,7 +3,7 @@ export type FileType = {
   task_id: number;
   date_start: string;
   date_end: number | null;
-  status: 1 | 2 | 3; //(1 — в работе, 2 — преобразован, 3 — провал)
+  status: 1 | 2 | 3 | 4; //(1 — в работе, 2 — преобразован, 3 — провал)
   base_path: string | null;
   name: string;
   result_path: string | null;
@@ -12,7 +12,6 @@ export type FileType = {
 };
 
 export const fileInWork = (file: FileType) => file.status === 1;
-
 export const fileCompleted = (file: FileType) => file.status === 2;
-
 export const fileError = (file: FileType) => file.status === 3;
+export const fileAbort = (file: FileType) => file.status === 4;

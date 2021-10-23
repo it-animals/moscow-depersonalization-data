@@ -26,10 +26,16 @@ const Wrapper = styled.div`
 `;
 
 const TitleName = styled(Typography)`
-  max-width: 780px;
+  max-width: 500px;
   white-space: nowrap;
   overflow-x: hidden;
   text-overflow: ellipsis;
+`;
+
+const WrapperLink = styled.div`
+  display: flex;
+  align-items: center;
+  column-gap: 20px;
 `;
 
 export const HeaderView: CT<unknown> = () => {
@@ -37,14 +43,16 @@ export const HeaderView: CT<unknown> = () => {
   const params = useParams<{ id: string; image: string }>();
   const countImages = useAppSelector(selectCountImages);
   const fileView = useAppSelector(selectViewFile);
-
+  const path = useHistory().location.pathname.includes("view")
+    ? "view"
+    : "initial";
   useEffect(() => {
     if (!countImages) return;
     if (isNaN(Number(params.image))) history.push("/");
     if (isNaN(Number(params.id))) history.push("/");
     if (countImages < Number(params.image)) {
       history.push({
-        pathname: `/view/${params.id}/1`,
+        pathname: `/${path}/${params.id}/1`,
       });
     }
   }, [params, countImages]);
@@ -55,21 +63,29 @@ export const HeaderView: CT<unknown> = () => {
         <AppBar color={"default"} position="static">
           <Toolbar>
             <Wrapper>
-              <Link to={fileView ? `/package/${fileView.task_id}` : "/"}>
-                <Button variant={"contained"}>Назад к файлам</Button>
-              </Link>
+              <WrapperLink>
+                <Link to={fileView ? `/package/${fileView.task_id}` : "/"}>
+                  <Button variant={"contained"}>Назад к файлам</Button>
+                </Link>
+
+                <Typography variant={"h6"}>
+                  {path === "view" ? "Преобразованные файлы" : "Исходные файлы"}
+                </Typography>
+              </WrapperLink>
               <div>
                 <Pagination
                   count={countImages ?? 0}
                   onChange={(event, page) => {
                     history.push({
-                      pathname: `/view/${params.id}/${page}`,
+                      pathname: `/${path}/${params.id}/${page}`,
                     });
                   }}
                   color="secondary"
                 />
               </div>
-              <TitleName variant={"h6"}>{fileView?.name ?? ""}</TitleName>
+              <TitleName title={fileView?.name ?? ""} variant={"h6"}>
+                {fileView?.name ?? ""}
+              </TitleName>
             </Wrapper>
           </Toolbar>
         </AppBar>

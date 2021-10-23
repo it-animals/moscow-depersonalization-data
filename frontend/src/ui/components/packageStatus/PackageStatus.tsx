@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import {
+  packageAbort,
   packageError,
   packageInWork,
   PackageType,
@@ -21,6 +22,19 @@ export const PackageStatus: CT<{ packageFile: PackageType | null }> = ({
 }) => {
   if (!packageFile) {
     return <></>;
+  }
+  if (packageAbort(packageFile)) {
+    return (
+      <Status>
+        <Typography
+          style={{ textDecoration: "underline" }}
+          color={"secondary.main"}
+          variant={"h5"}
+        >
+          Пакет документов №{packageFile.id}. Обработка отменена
+        </Typography>
+      </Status>
+    );
   }
   if (packageError(packageFile)) {
     return (

@@ -60,11 +60,7 @@ class ImageParser
      * @var float
      */
     private float $dpi;
-    /**
-     * Словарь
-     * @var array
-     */
-    private static array $words = [];
+    
 
     public function __construct(string $imagePath, string $pdfPath, string $resultPath)
     {
@@ -124,40 +120,34 @@ class ImageParser
 
     /**
      * Поиск ПДн в строке
-     * @param string $row строка
+     * @param string $row строка 
      * @return array
      */
-    private function findPdnInRow(string $row): array
-    {
+    private function findPdnInRow(string $row): array {
         $result = [];
         $matches = [];
-        preg_match_all('/[А-ЯЁ][.,] {0,5}[А-ЯЁ][.,] {0,5}[А-ЯЁ][а-яё]{2,25}/u', $row, $matches);
-        if ($matches) {
+        //ETOPAHKXCBM eryopaxc - латинские буквы, похожие визуально на кириллицу
+        preg_match_all('/[А-ЯЁETOPAHKXCBM][.,] {0,5}[А-ЯЁETOPAHKXCBM][.,] {0,5}[А-ЯЁETOPAHKXCBM][а-яёeryopaxc]{2,25}/u', $row, $matches);
+        if($matches) {
             $result = array_merge($result, $matches[0]);
         }
-        preg_match_all('/[А-ЯЁ][а-яё]{2,25} {0,5}[А-ЯЁ][,.] {0,5}[А-ЯЁ][.,]/u', $row, $matches);
-        if ($matches) {
+        preg_match_all('/[А-ЯЁETOPAHKXCBM][а-яёeryopaxc]{2,25} {0,5}[А-ЯЁETOPAHKXCBM][,.] {0,5}[А-ЯЁETOPAHKXCBM][.,]/u', $row, $matches);
+        if($matches) {
             $result = array_merge($result, $matches[0]);
-        }
-        preg_match_all('/[А-ЯЁ][а-яё]{2,25} {0,5}[А-ЯЁ][а-яё]{2,10} {0,5}[А-ЯЁ][а-яё]{2,20}/u', $row, $matches);
-        if ($matches) {
+        }            
+        preg_match_all('/[А-ЯЁETOPAHKXCBM][а-яёeryopaxc]{2,25}[ .,]{0,5}[А-ЯЁETOPAHKXCBM][а-яёeryopaxc]{2,25}[ .,]{0,5}[А-ЯЁETOPAHKXCBM][а-яёeryopaxc]{2,25}/u', $row, $matches);        
+        if($matches) {
             $result = array_merge($result, $matches[0]);
-        }
-        $result = array_filter($result, function ($pdn) {
-            foreach (explode(' ', $pdn) as $word) {
-                $checkWord = mb_strtolower($word, 'UTF-8');
-                if (key_exists($checkWord, self::$words)) { //слово встречается в словарике
-                    return false;
-                }
-            }
-            if (preg_match("/Правительств|Москв|Росси/u", $pdn)) {
+        }        
+        $result = array_filter($result, function($pdn) {
+            if(preg_match("/Правительств|Москв|Росси/u", $pdn)) {
                 return false;
             }
             return true;
         });
-        return array_map(function ($pdn) {
-            return str_replace(',', '', $pdn);
-        }, $result);
+        return array_map(function($pdn) {
+            return str_replace(',', '', $pdn);            
+        }, $result);        
     }
 
     /**
@@ -192,7 +182,7 @@ class ImageParser
                 $result[] = $this->unionWords([$words[$i - 1], $words[$i]]);
             } elseif ($i > 2 && $this->isPDn([$words[$i - 2]['word'], $words[$i - 1]['word'], $words[$i]['word']], $pdns)) {
                 $result[] = $this->unionWords([$words[$i - 2], $words[$i - 1], $words[$i]]);
-            } elseif($length > 3 && $startWithBig && preg_match("/(вич|вича|вичу|вичем|виче|евна|евны|евне|евну|евной|евне)\W{0,}$/u", $base)) { //поиск отчеств по окончаниям
+            } elseif($length > 3 && $startWithBig && preg_match("/(вич|вича|вичу|вичем|виче|[ео]вна|[ео]вны|[ео]вне|[ео]вну|[ео]вной|[ео]вне)\W{0,}$/u", $base)) { //поиск отчеств по окончаниям
                 echo $base, "<br>";
                 $result[] = $this->unionWords([$words[$i]]);
             } elseif($length > 1 && $startWithBig && NameSurname::findOne(['word' => $base])) { //поиск имен и фамилий по словарю
@@ -209,10 +199,10 @@ class ImageParser
      * @param array $pdns массив ПДн
      * @return bool
      */
-    private function isPDn(array $words, array $pdns): bool
-    {
+    private function isPDn(array $words, array $pdns): bool {
         $check = implode(' ', $words);
-        $check = preg_replace('/[^ .а-яё]/ui', '', $check);
+        //ETOPAHKXCBM eryopaxc - латинские буквы, похожие визуально на кириллицу
+        $check = preg_replace('/[^ .а-яёetryopahkxcbm]/ui','',$check);        
         return in_array($check, $pdns);
     }
 

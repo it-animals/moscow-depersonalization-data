@@ -55,7 +55,8 @@ class TaskController extends Controller
             if ($pdf == 1) {
                 $output = dirname($file->base_path) . "/output.pdf";
                 if (file_exists($output)) {
-                    $zip->addFile($output, "{$file->name}");
+
+                    $zip->addFile($output, "{$file->name}.pdf");
                 }
             } else {
                 foreach (glob($file->result_path . '/*.jpg') as $item) {

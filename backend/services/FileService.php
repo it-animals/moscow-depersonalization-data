@@ -13,6 +13,7 @@ use function array_merge;
 use function file_exists;
 use function intdiv;
 use function key_exists;
+use function preg_replace;
 use function unlink;
 
 final class FileService extends BaseObject
@@ -63,7 +64,8 @@ final class FileService extends BaseObject
      */
     public function getFilePath(File $file): string
     {
-        return $this->getFileDir($file) . $file->name;
+        $extension = preg_replace('/^.+\./u', '', $file->name);
+        return $this->getFileDir($file) . $file->id . ".{$extension}";
     }
 
     /**

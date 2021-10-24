@@ -61,7 +61,7 @@ class TaskController extends Controller
                 foreach (glob($file->result_path . '/*.jpg') as $item) {
                     $info = pathinfo($item);
 
-                    $zip->addFile($item, "{$file->id}/{$info['basename']}");
+                    $zip->addFile($item, "{$file->name}/{$info['basename']}");
                 }
 
             }

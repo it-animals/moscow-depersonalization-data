@@ -88,7 +88,7 @@ export const Header: CT<unknown> = () => {
                 </a>
                 <LogoLink href="/">
                   <Typography variant="h6" noWrap component="div">
-                    деПерсонализатор
+                    ПДн.net
                   </Typography>
                 </LogoLink>
               </Part>

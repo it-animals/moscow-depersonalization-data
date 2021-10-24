@@ -81,7 +81,6 @@ export const PackageListPage: CT<unknown> = () => {
   };
 
   const filteredData = filterBy(list, Number(urlState.filterBy) as FilterType);
-  console.log(filteredData);
 
   return (
     <PageTemplate>

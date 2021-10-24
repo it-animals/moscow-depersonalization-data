@@ -3,6 +3,7 @@ import { Button, Grid, Typography } from "@mui/material";
 import { useAppDispatch } from "../../service/store/store";
 import { useEffect } from "react";
 import { clearAppError } from "../../service/store/application/appSlice";
+import { useTitle } from "ahooks";
 
 export const NotFoundPage: CT<unknown> = () => {
   const dispatch = useAppDispatch();
@@ -11,6 +12,7 @@ export const NotFoundPage: CT<unknown> = () => {
       dispatch(clearAppError());
     };
   }, []);
+  useTitle("Страница не найдена");
   return (
     <>
       <PageTemplate>

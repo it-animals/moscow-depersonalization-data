@@ -20,6 +20,7 @@ import { Link, useHistory, useParams } from "react-router-dom";
 import { packageCompleted } from "../../domain/package";
 import { PackageStatus } from "../components/packageStatus/PackageStatus";
 import { TimeoutId } from "@reduxjs/toolkit/dist/query/core/buildMiddleware/types";
+import { useTitle } from "ahooks";
 
 const UploadContainer = styled(motion(Paper))`
   width: 100%;
@@ -83,7 +84,7 @@ export const LoadPage: CT<unknown> = () => {
   useEffect(() => {
     dispath(clearAllPackage());
   }, []);
-
+  useTitle("Создать пакет");
   return (
     <PageTemplate>
       <TopLine>

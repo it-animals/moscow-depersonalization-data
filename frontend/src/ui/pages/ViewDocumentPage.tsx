@@ -13,6 +13,7 @@ import {
 import { appConfig } from "../../config";
 import { fileService } from "../../service/file/fileService";
 import { taskService } from "../../service/task/taskService";
+import { useTitle } from "ahooks";
 
 const Content = styled.div`
   width: 100%;
@@ -64,6 +65,7 @@ export const ViewDocumentPage: CT<unknown> = () => {
     }, 0);
   }, [refSlider, viewFile, params.image]);
 
+  useTitle("Просмотр документа");
   useEffect(() => {
     if (!viewFile) {
       (async () => {

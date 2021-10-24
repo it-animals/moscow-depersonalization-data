@@ -140,7 +140,7 @@ class ImageParser
             $result = array_merge($result, $matches[0]);
         }        
         $result = array_filter($result, function($pdn) {
-            if(preg_match("/Правительств|Москв|Росси|консультант|ТРУДА|Отдел|Управлени|Департамент|заместител|начальник/u", $pdn)) {
+            if(preg_match("/правительств|москв|росси|консультант|труд|отдел|управлени|департамент|заместител|начальник/ui", $pdn)) {
                 return false;
             }
             return true;
@@ -172,7 +172,7 @@ class ImageParser
                 'yMax' => $search[4],
                 'word' => $search[5]
             ];
-            $startWithBig = preg_match('/^[А-ЯЁ]/u', $words[$i]['word']) ? true : false;
+            $startWithBig = preg_match('/^[А-ЯЁ][а-яё]/u', $words[$i]['word']) ? true : false;
             $base = $this->correctWord($words[$i]['word']);
             $length = mb_strlen($base, 'UTF-8');            
             if ($this->isPDn([$words[$i]['word']], $pdns)) {

@@ -15,6 +15,7 @@ import {
 } from "../features/common/LoadContextProvider";
 import useUrlState from "@ahooksjs/use-url-state";
 import { Filter } from "../components/filter/Filter";
+import { useTitle } from "ahooks";
 
 const TopLine = styled(motion.div)`
   width: 100%;
@@ -46,7 +47,7 @@ export const PackageListPage: CT<unknown> = () => {
   const [urlState, setUrlState] = useUrlState<{
     filterBy: FilterType;
   }>({ filterBy: 0 });
-
+  useTitle("Пакеты документов");
   useEffect(() => {
     (async () => {
       const load = async () => {
@@ -80,6 +81,7 @@ export const PackageListPage: CT<unknown> = () => {
   };
 
   const filteredData = filterBy(list, Number(urlState.filterBy) as FilterType);
+  console.log(filteredData);
 
   return (
     <PageTemplate>
@@ -150,14 +152,15 @@ export const PackageListPage: CT<unknown> = () => {
           />
         </FilterContent>
       </FilterLine>
-      {!!list.length && (
-        <Grid
-          container
-          rowSpacing={2}
-          columnSpacing={10}
-          justifyContent={"flex-start"}
-        >
-          {filteredData.map((item) => {
+
+      <Grid
+        container
+        rowSpacing={2}
+        columnSpacing={10}
+        justifyContent={"flex-start"}
+      >
+        {filteredData.length > 0 ? (
+          filteredData.map((item) => {
             return (
               <LinePackage
                 {...upToDownAnimate}
@@ -176,9 +179,13 @@ export const PackageListPage: CT<unknown> = () => {
                 />
               </LinePackage>
             );
-          })}
-        </Grid>
-      )}
+          })
+        ) : (
+          <Grid item xs={4}>
+            <Typography variant={"h6"}>Пакеты не найдены</Typography>
+          </Grid>
+        )}
+      </Grid>
     </PageTemplate>
   );
 };

@@ -26,6 +26,7 @@ import {
   LoadContextType,
   LoadContext,
 } from "../features/common/LoadContextProvider";
+import { useTitle } from "ahooks";
 
 const UploadContainer = styled(motion(Paper))`
   width: 100%;
@@ -71,6 +72,7 @@ export const PackagePage: CT<unknown> = () => {
   const dispath = useAppDispatch();
   const packageFiles = useAppSelector(selectPackage);
   const history = useHistory();
+  useTitle("Просмотр пакета");
 
   useEffect(() => {
     if (!params.packageId) return;

@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { useEffect } from "react";
 import { useAppDispatch } from "../../service/store/store";
 import { clearAppError } from "../../service/store/application/appSlice";
+import { useTitle } from "ahooks";
 
 export const ErrorPage: CT<unknown> = () => {
   const dispatch = useAppDispatch();
@@ -12,6 +13,7 @@ export const ErrorPage: CT<unknown> = () => {
       dispatch(clearAppError());
     };
   }, []);
+  useTitle("Ошибка");
   return (
     <>
       <PageTemplate>

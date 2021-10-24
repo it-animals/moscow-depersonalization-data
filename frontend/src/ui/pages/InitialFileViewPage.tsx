@@ -13,6 +13,7 @@ import {
 import { appConfig } from "../../config";
 import { fileService } from "../../service/file/fileService";
 import { taskService } from "../../service/task/taskService";
+import { useTitle } from "ahooks";
 
 const Content = styled.div`
   width: 100%;
@@ -84,6 +85,8 @@ export const InitialFileViewPage: CT<unknown> = () => {
     }
   }, [viewFile]);
   const path = appConfig.apiUrl;
+
+  useTitle("Просмотр исходных файлов");
   return (
     <PageTemplateView>
       {viewFile && (

@@ -60,7 +60,7 @@ class FileParser
             $pageCount = $search[0];
             exec("pdftotext '{$this->inputPath}' -", $logs);
             $this->pdfWithoutText = !trim(implode(' ', $logs))  || count($logs) < 5 * $pageCount; //проверка, что в pdf нет, текста
-            $this->pdfWithoutText = true;
+            //$this->pdfWithoutText = true;
             return $this->parsePdf($this->inputPath);
         } elseif ($this->type == 'image') {
             $command = "tesseract -l rus+eng '{$this->inputPath}' {$tmpFolder}/out pdf";

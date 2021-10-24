@@ -47,16 +47,19 @@ class FileParser
 
     public function parse(): bool
     {
-
         $logs = [];
+        $search = [];
         $tmpFolder = Yii::getAlias("{$this->path}/tmp");
         if (!file_exists($tmpFolder)) {
             mkdir($tmpFolder);
         }
 
         if ($this->type == 'pdf') {
+            $pagesRaw = exec("pdfinfo {$this->inputPath} | grep Pages");
+            preg_match('/\d+/i', $pagesRaw, $search);
+            $pageCount = $search[0];
             exec("pdftotext '{$this->inputPath}' -", $logs);
-            $this->pdfWithoutText = !trim(implode(' ', $logs)); //проверка, что в pdf нет, текста
+            $this->pdfWithoutText = !trim(implode(' ', $logs))  || count($logs) < 5 * $pageCount; //проверка, что в pdf нет, текста
             return $this->parsePdf($this->inputPath);
         } elseif ($this->type == 'image') {
             $command = "tesseract -l rus+eng '{$this->inputPath}' {$tmpFolder}/out pdf";

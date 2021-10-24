@@ -2,17 +2,12 @@ import { PageTemplate } from "../components/templates/PageTemplate";
 import styled from "styled-components";
 import { Button, Grid, Typography } from "@mui/material";
 import { PackageItem } from "../components/packageItem/PackageItem";
-import { Link } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
 import { PackageType } from "../../domain/package";
 import { taskService } from "../../service/task/taskService";
 import { motion } from "framer-motion";
 import { upToDownAnimate } from "../lib/animations/upToDownAnimate";
-import { setPackage } from "../../service/store/package/packageSlice";
-import {
-  LoadContext,
-  loadContextData,
-} from "../features/common/LoadContextProvider";
+import { LoadContext } from "../features/common/LoadContextProvider";
 import useUrlState from "@ahooksjs/use-url-state";
 import { Filter } from "../components/filter/Filter";
 import { useTitle } from "ahooks";

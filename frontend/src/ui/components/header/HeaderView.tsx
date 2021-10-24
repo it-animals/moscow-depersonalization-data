@@ -1,9 +1,7 @@
 import {
   AppBar,
-  Badge,
   Box,
   Button,
-  IconButton,
   Pagination,
   Toolbar,
   Typography,
@@ -14,7 +12,7 @@ import {
   selectCountImages,
   selectViewFile,
 } from "../../../service/store/file/fileViewSlice";
-import { useAppDispatch, useAppSelector } from "../../../service/store/store";
+import { useAppSelector } from "../../../service/store/store";
 import { useEffect } from "react";
 
 const Wrapper = styled.div`

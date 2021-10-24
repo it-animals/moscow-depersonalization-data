@@ -19,8 +19,11 @@ import {
 import { motion } from "framer-motion";
 import { upToDownAnimate } from "../../lib/animations/upToDownAnimate";
 import { Link } from "react-router-dom";
-import { KeyboardArrowDownOutlined, Loop } from "@mui/icons-material";
-import { NearbyErrorOutlined } from "@mui/icons-material";
+import {
+  KeyboardArrowDownOutlined,
+  Loop,
+  NearbyErrorOutlined,
+} from "@mui/icons-material";
 import { useAppDispatch } from "../../../service/store/store";
 import { setViewFile } from "../../../service/store/file/fileViewSlice";
 import { useRef, useState } from "react";

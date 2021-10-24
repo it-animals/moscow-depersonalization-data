@@ -17,10 +17,8 @@ import {
   Typography,
 } from "@mui/material";
 import { KeyboardArrowDownOutlined } from "@mui/icons-material";
-import { fileAbort, fileError } from "../../../domain/file";
 import { useRef, useState } from "react";
 import { appConfig } from "../../../config";
-import { Link } from "react-router-dom";
 
 const Status = styled.div`
   width: 100%;

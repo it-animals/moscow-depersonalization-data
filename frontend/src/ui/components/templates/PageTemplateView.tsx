@@ -1,6 +1,5 @@
 import styled from "styled-components";
 import { Box, Container } from "@mui/material";
-import { Header } from "../header/Header";
 import { HeaderView } from "../header/HeaderView";
 
 const BoxContent = styled(Box)`

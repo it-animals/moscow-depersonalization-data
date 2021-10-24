@@ -1,11 +1,4 @@
-import {
-  AppBar,
-  Badge,
-  Box,
-  IconButton,
-  Toolbar,
-  Typography,
-} from "@mui/material";
+import { AppBar, Box, Toolbar, Typography } from "@mui/material";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import Logo from "../../../assets/login.svg";

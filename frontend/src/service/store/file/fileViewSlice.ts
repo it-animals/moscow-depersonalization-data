@@ -1,7 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../store";
-import { AppError } from "../../../domain/appError";
-import { PackageType } from "../../../domain/package";
 import { FileType } from "../../../domain/file";
 
 const initialState = null as FileType | null;

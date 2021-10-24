@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { Box, Button, Grid, Typography, useTheme } from "@mui/material";
+import { Box, Grid, Typography, useTheme } from "@mui/material";
 import { FileDownloadOutlined } from "@mui/icons-material";
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";

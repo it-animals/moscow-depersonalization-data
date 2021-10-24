@@ -5,22 +5,13 @@ import {
   selectFilterPackage,
   selectPackage,
 } from "../../../service/store/package/packageSlice";
-import {
-  Box,
-  Button,
-  Grid,
-  InputAdornment,
-  Paper,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Box, Button, Grid, TextField, Typography } from "@mui/material";
 import { FileItem } from "../../components/fileItem/FileItem";
 import styled from "styled-components";
 import { motion } from "framer-motion";
 import SearchIcon from "@mui/icons-material/Search";
 import { upToDownAnimate } from "../../lib/animations/upToDownAnimate";
-import { useEffect, useState } from "react";
-import { fileService } from "../../../service/file/fileService";
+import { useState } from "react";
 import useUrlState from "@ahooksjs/use-url-state";
 import { Filter } from "../../components/filter/Filter";
 import { PackageType } from "../../../domain/package";

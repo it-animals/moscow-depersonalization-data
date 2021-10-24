@@ -1,12 +1,9 @@
 import { PageTemplate } from "../components/templates/PageTemplate";
-import { UploadFile } from "../features/UploadFile/UploadFile";
 import styled from "styled-components";
-import { Button, Grid, Paper, useTheme } from "@mui/material";
-import { useContext, useEffect, useState } from "react";
-import { fileService } from "../../service/file/fileService";
+import { Button, Paper } from "@mui/material";
+import { useContext, useEffect } from "react";
 import { motion } from "framer-motion";
 import { upToDownAnimate } from "../lib/animations/upToDownAnimate";
-import { uploadFileAnimate } from "../lib/animations/uploadFileAnimate";
 import { Loader } from "../components/loader/Loader";
 import { taskService } from "../../service/task/taskService";
 import { useAppDispatch, useAppSelector } from "../../service/store/store";
@@ -16,15 +13,12 @@ import {
   setPackage,
 } from "../../service/store/package/packageSlice";
 import { FileList } from "../features/FileList/FileList";
-import { Link, useHistory, useParams } from "react-router-dom";
-import { packageCompleted } from "../../domain/package";
+import { useHistory, useParams } from "react-router-dom";
 import { PackageStatus } from "../components/packageStatus/PackageStatus";
-import { TimeoutId } from "@reduxjs/toolkit/dist/query/core/buildMiddleware/types";
 import {
-  LoadContextProvider,
+  LoadContext,
   loadContextData,
   LoadContextType,
-  LoadContext,
 } from "../features/common/LoadContextProvider";
 import { useTitle } from "ahooks";
 

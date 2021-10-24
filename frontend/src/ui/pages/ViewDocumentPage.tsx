@@ -1,4 +1,3 @@
-import { PageTemplate } from "../components/templates/PageTemplate";
 import styled from "styled-components";
 import Slider from "react-slick";
 import { PageTemplateView } from "../components/templates/PageTemplateView";
@@ -11,7 +10,6 @@ import {
   setViewFile,
 } from "../../service/store/file/fileViewSlice";
 import { appConfig } from "../../config";
-import { fileService } from "../../service/file/fileService";
 import { taskService } from "../../service/task/taskService";
 import { useTitle } from "ahooks";
 

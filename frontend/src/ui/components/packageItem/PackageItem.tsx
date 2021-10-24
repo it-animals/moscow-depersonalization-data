@@ -1,10 +1,7 @@
 import styled from "styled-components";
 import { Button, Paper, Typography, useTheme } from "@mui/material";
-import { PackageType } from "../../../domain/package";
 import { Link } from "react-router-dom";
-import { KeyboardArrowDownOutlined } from "@mui/icons-material";
 import { statusCatalog } from "../../../domain/status";
-import { fileService } from "../../../service/file/fileService";
 import { taskService } from "../../../service/task/taskService";
 
 const Container = styled(Paper)`

@@ -54,6 +54,7 @@ export const PackageStatus: CT<{ packageFile: PackageType | null }> = ({
       setOpen(false);
     };
     if (!packageCompleted(item)) return <></>;
+    // if (packageAbort(item) || packageInWork(item)) return <></>;
     return (
       <div>
         <Button

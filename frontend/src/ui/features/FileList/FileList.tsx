@@ -21,6 +21,9 @@ import SearchIcon from "@mui/icons-material/Search";
 import { upToDownAnimate } from "../../lib/animations/upToDownAnimate";
 import { useEffect, useState } from "react";
 import { fileService } from "../../../service/file/fileService";
+import useUrlState from "@ahooksjs/use-url-state";
+import { Filter } from "../../components/filter/Filter";
+import { PackageType } from "../../../domain/package";
 
 const SearchLine = styled(motion.div)`
   min-height: 60px;
@@ -29,6 +32,17 @@ const SearchLine = styled(motion.div)`
   display: flex;
   align-items: end;
   justify-content: space-between;
+`;
+
+const FilterLine = styled(motion.div)`
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+`;
+const FilterContent = styled.div`
+  display: flex;
+  align-items: center;
+  column-gap: 15px;
 `;
 
 const ButtonWrapper = styled.div`
@@ -44,7 +58,12 @@ const Count = styled.div`
   margin-bottom: 15px;
 `;
 
+type FilterType = 1 | 2 | 3 | 4 | 0;
+
 export const FileList: CT<unknown> = () => {
+  const [urlState, setUrlState] = useUrlState<{
+    filterBy: FilterType;
+  }>({ filterBy: 0 });
   const [inputSearch, setInputSearch] = useState("");
   const [existSearch, setExitSearch] = useState(false);
 
@@ -72,6 +91,20 @@ export const FileList: CT<unknown> = () => {
   };
 
   if (!data) return <></>;
+
+  const clickFilterHandler = (status: FilterType) => {
+    setUrlState({ filterBy: status });
+  };
+
+  const filterBy = (data: PackageType, filterBy: FilterType): PackageType => {
+    if (filterBy === 0) return data;
+    return {
+      ...data,
+      files: data.files.filter((file) => file.status === filterBy),
+    };
+  };
+
+  const filteredData = filterBy(data, Number(urlState.filterBy) as FilterType);
 
   return (
     <>
@@ -111,17 +144,65 @@ export const FileList: CT<unknown> = () => {
           </Button>
         </ButtonWrapper>
       </SearchLine>
+      <FilterLine
+        {...upToDownAnimate}
+        transition={{
+          ease: ["easeInOut"],
+          duration: 0.3,
+          delay: 0.3,
+        }}
+      >
+        <Typography fontWeight={"bold"}>Фильтры:&nbsp;&nbsp;&nbsp;</Typography>
+        <FilterContent>
+          <Filter
+            onClick={clickFilterHandler}
+            status={0}
+            isActive={+urlState.filterBy === 0}
+            title={"Все"}
+          />
+          <Filter
+            onClick={clickFilterHandler}
+            status={1}
+            isActive={+urlState.filterBy === 1}
+            title={"В работе"}
+          />
+          <Filter
+            onClick={clickFilterHandler}
+            status={2}
+            isActive={+urlState.filterBy === 2}
+            title={"Преобразован"}
+          />
+          <Filter
+            onClick={clickFilterHandler}
+            status={4}
+            isActive={+urlState.filterBy === 4}
+            title={"Отменен"}
+          />
+          <Filter
+            onClick={clickFilterHandler}
+            status={3}
+            isActive={+urlState.filterBy === 3}
+            title={"Ошибка"}
+          />
+        </FilterContent>
+      </FilterLine>
       <Grid
         container
         rowSpacing={2}
         columnSpacing={10}
         justifyContent={"flex-start"}
       >
-        {data!.files.map((item) => (
-          <Grid item xs={4} key={item.id}>
-            <FileItem showAnimate={!existSearch} item={item} />
+        {filteredData.files.length > 0 ? (
+          filteredData!.files.map((item) => (
+            <Grid item xs={4} key={item.id}>
+              <FileItem showAnimate={!existSearch} item={item} />
+            </Grid>
+          ))
+        ) : (
+          <Grid item xs={4}>
+            <Typography variant={"h6"}>Файлы не найдены</Typography>
           </Grid>
-        ))}
+        )}
       </Grid>
     </>
   );

@@ -13,6 +13,8 @@ import {
   LoadContext,
   loadContextData,
 } from "../features/common/LoadContextProvider";
+import useUrlState from "@ahooksjs/use-url-state";
+import { Filter } from "../components/filter/Filter";
 
 const TopLine = styled(motion.div)`
   width: 100%;
@@ -25,9 +27,25 @@ const TopLine = styled(motion.div)`
 
 const LinePackage = styled(motion(Grid))``;
 
+const FilterLine = styled(motion.div)`
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+`;
+const FilterContent = styled.div`
+  display: flex;
+  align-items: center;
+  column-gap: 15px;
+`;
+
+type FilterType = 1 | 2 | 3 | 4 | 0;
+
 export const PackageListPage: CT<unknown> = () => {
   const [list, setList] = useState<PackageType[]>([]);
   const loadContextData = useContext(LoadContext);
+  const [urlState, setUrlState] = useUrlState<{
+    filterBy: FilterType;
+  }>({ filterBy: 0 });
 
   useEffect(() => {
     (async () => {
@@ -48,6 +66,20 @@ export const PackageListPage: CT<unknown> = () => {
     loadContextData.clearLoad();
     taskService.stop();
   };
+
+  const filterBy = (
+    data: PackageType[],
+    filterBy: FilterType
+  ): PackageType[] => {
+    if (filterBy === 0) return data;
+    return data.filter((packageFile) => packageFile.status === filterBy);
+  };
+
+  const clickFilterHandler = (status: FilterType) => {
+    setUrlState({ filterBy: status });
+  };
+
+  const filteredData = filterBy(list, Number(urlState.filterBy) as FilterType);
 
   return (
     <PageTemplate>
@@ -76,6 +108,48 @@ export const PackageListPage: CT<unknown> = () => {
           </Button>
         </a>
       </TopLine>
+      <FilterLine
+        {...upToDownAnimate}
+        transition={{
+          ease: ["easeInOut"],
+          duration: 0.3,
+          delay: 0.1,
+        }}
+      >
+        <Typography fontWeight={"bold"}>Фильтры:&nbsp;&nbsp;&nbsp;</Typography>
+        <FilterContent>
+          <Filter
+            onClick={clickFilterHandler}
+            status={0}
+            isActive={+urlState.filterBy === 0}
+            title={"Все"}
+          />
+          <Filter
+            onClick={clickFilterHandler}
+            status={2}
+            isActive={+urlState.filterBy === 2}
+            title={"Преобразован"}
+          />
+          <Filter
+            onClick={clickFilterHandler}
+            status={1}
+            isActive={+urlState.filterBy === 1}
+            title={"В работе"}
+          />
+          <Filter
+            onClick={clickFilterHandler}
+            status={4}
+            isActive={+urlState.filterBy === 4}
+            title={"Отменен"}
+          />
+          <Filter
+            onClick={clickFilterHandler}
+            status={3}
+            isActive={+urlState.filterBy === 3}
+            title={"Ошибка"}
+          />
+        </FilterContent>
+      </FilterLine>
       {!!list.length && (
         <Grid
           container
@@ -83,7 +157,7 @@ export const PackageListPage: CT<unknown> = () => {
           columnSpacing={10}
           justifyContent={"flex-start"}
         >
-          {list.map((item) => {
+          {filteredData.map((item) => {
             return (
               <LinePackage
                 {...upToDownAnimate}

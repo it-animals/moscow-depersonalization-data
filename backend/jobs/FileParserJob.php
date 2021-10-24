@@ -10,6 +10,7 @@ use yii\base\BaseObject;
 use yii\queue\JobInterface;
 use function date;
 use function dirname;
+use function ini_set;
 
 /**
  * Разбор файла
@@ -20,6 +21,15 @@ class FileParserJob extends BaseObject implements JobInterface
 
     public function execute($queue)
     {
+        ini_set('post_max_size', '0');
+        ini_set('upload_max_filesize', '0');
+        ini_set('memory_limit', '-1');
+        ini_set('max_execution_time', '0');
+        ini_set('max_input_time', '0');
+        ini_set('session.gc_maxlifetime', '0');
+        ini_set('max_file_uploads', '1000');
+
+
         $file = File::findOne($this->fileId);
         if (!$file) {
             return false;

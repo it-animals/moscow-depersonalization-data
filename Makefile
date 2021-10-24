@@ -9,7 +9,8 @@ down:
 down-clear:
 	(cd backend && docker-compose down -v --remove-orphans) && \
 	(cd frontend && docker-compose down -v --remove-orphans) && \
-	(cd backend/files && sudo rm -vrf ./*)
+	(cd backend/files && sudo rm -vrf ./*) && \
+	(cd backend/runtime && sudo rm -vrf ./*)
 status:
 	(cd backend && docker-compose ps -a) && \
 	(cd frontend && docker-compose ps -a)

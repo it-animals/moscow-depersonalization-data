@@ -127,15 +127,15 @@ class ImageParser
         $result = [];
         $matches = [];
         //ETOPAHKXCBM eryopaxc - латинские буквы, похожие визуально на кириллицу
-        preg_match_all('/[А-ЯЁETOPAHKXCBM][.,] {0,5}[А-ЯЁETOPAHKXCBM][.,] {0,5}[А-ЯЁETOPAHKXCBM][а-яёeryopaxc]{2,25}/u', $row, $matches);
+        preg_match_all('/(?<!им\.|им\. |имени|имени )[А-ЯЁETOPAHKXCBM][.,] {0,5}[А-ЯЁETOPAHKXCBM][.,] {0,5}[А-ЯЁETOPAHKXCBM][а-яёeryopaxc]{2,25}/u', $row, $matches);
         if($matches) {
             $result = array_merge($result, $matches[0]);
         }
-        preg_match_all('/[А-ЯЁETOPAHKXCBM][а-яёeryopaxc]{2,25} {0,5}[А-ЯЁETOPAHKXCBM][,.] {0,5}[А-ЯЁETOPAHKXCBM][.,]/u', $row, $matches);
+        preg_match_all('/(?<!им\.|им\. |имени|имени )[А-ЯЁETOPAHKXCBM][а-яёeryopaxc]{2,25} {0,5}[А-ЯЁETOPAHKXCBM][,.] {0,5}[А-ЯЁETOPAHKXCBM][.,]/u', $row, $matches);
         if($matches) {
             $result = array_merge($result, $matches[0]);
         }            
-        preg_match_all('/[А-ЯЁETOPAHKXCBM][а-яёeryopaxc]{2,25}[ .,]{0,5}[А-ЯЁETOPAHKXCBM][а-яёeryopaxc]{2,25}[ .,]{0,5}[А-ЯЁETOPAHKXCBM][а-яёeryopaxc]{2,25}/u', $row, $matches);        
+        preg_match_all('/(?<!им\.|им\. |имени|имени )[А-ЯЁETOPAHKXCBM][а-яёeryopaxc]{2,25}[ .,]{0,5}[А-ЯЁETOPAHKXCBM][а-яёeryopaxc]{2,25}[ .,]{0,5}[А-ЯЁETOPAHKXCBM][а-яёeryopaxc]{2,25}/u', $row, $matches);        
         if($matches) {
             $result = array_merge($result, $matches[0]);
         }        

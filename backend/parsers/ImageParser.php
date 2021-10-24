@@ -140,7 +140,7 @@ class ImageParser
             $result = array_merge($result, $matches[0]);
         }        
         $result = array_filter($result, function($pdn) {
-            if(preg_match("/Правительств|Москв|Росси/u", $pdn)) {
+            if(preg_match("/Правительств|Москв|Росси|консультант|ТРУДА|Отдел|Управлени|Департамент|заместител|начальник/u", $pdn)) {
                 return false;
             }
             return true;

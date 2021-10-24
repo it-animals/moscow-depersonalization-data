@@ -15,6 +15,7 @@ import { useState } from "react";
 import useUrlState from "@ahooksjs/use-url-state";
 import { Filter } from "../../components/filter/Filter";
 import { PackageType } from "../../../domain/package";
+import { loadContextData } from "../common/LoadContextProvider";
 
 const SearchLine = styled(motion.div)`
   min-height: 60px;
@@ -51,7 +52,9 @@ const Count = styled.div`
 
 type FilterType = 1 | 2 | 3 | 4 | 0;
 
-export const FileList: CT<unknown> = () => {
+export const FileList: CT<{ onClickFilter: VoidFunction }> = ({
+  onClickFilter,
+}) => {
   const [urlState, setUrlState] = useUrlState<{
     filterBy: FilterType;
   }>({ filterBy: 0 });
@@ -84,6 +87,7 @@ export const FileList: CT<unknown> = () => {
   if (!data) return <></>;
 
   const clickFilterHandler = (status: FilterType) => {
+    onClickFilter();
     setUrlState({ filterBy: status });
   };
 

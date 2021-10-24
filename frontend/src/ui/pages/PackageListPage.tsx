@@ -2,7 +2,7 @@ import { PageTemplate } from "../components/templates/PageTemplate";
 import styled from "styled-components";
 import { Button, Grid, Typography } from "@mui/material";
 import { PackageItem } from "../components/packageItem/PackageItem";
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { PackageType } from "../../domain/package";
 import { taskService } from "../../service/task/taskService";
 import { motion } from "framer-motion";
@@ -58,10 +58,10 @@ export const PackageListPage: CT<unknown> = () => {
     })();
   }, []);
 
-  const stopLoadHandler = () => {
+  const stopLoadHandler = useCallback(() => {
     loadContextData.clearLoad();
     taskService.stop();
-  };
+  }, []);
 
   const filterBy = (
     data: PackageType[],

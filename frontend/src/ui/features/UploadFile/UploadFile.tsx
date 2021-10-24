@@ -50,7 +50,6 @@ export const UploadFile: CT<{
   const dropRef = useRef<null | HTMLLabelElement>(null);
   const [isDragEnter, setDragEnter] = useState(false);
   const [files, setFiles] = useState<File[]>([]);
-
   const greyColor = theme.palette.grey["400"];
   const accentColor = theme.palette.secondary.main;
 
@@ -169,6 +168,7 @@ export const UploadFile: CT<{
         <InputFile
           onChange={loadFileHandler}
           id={"upload-wrapper"}
+          maxLength={1001}
           type={"file"}
           multiple
         />

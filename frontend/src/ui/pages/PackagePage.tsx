@@ -1,7 +1,7 @@
 import { PageTemplate } from "../components/templates/PageTemplate";
 import styled from "styled-components";
 import { Button, Paper } from "@mui/material";
-import { useContext, useEffect } from "react";
+import { useCallback, useContext, useEffect } from "react";
 import { motion } from "framer-motion";
 import { upToDownAnimate } from "../lib/animations/upToDownAnimate";
 import { Loader } from "../components/loader/Loader";
@@ -67,6 +67,10 @@ export const PackagePage: CT<unknown> = () => {
   const packageFiles = useAppSelector(selectPackage);
   const history = useHistory();
   useTitle("Просмотр пакета");
+
+  const stopRequest = useCallback(() => {
+    loadContextData.clearLoad();
+  }, []);
 
   useEffect(() => {
     if (!params.packageId) return;
@@ -146,7 +150,9 @@ export const PackagePage: CT<unknown> = () => {
         </StatusWrapper>
       }
 
-      {packageFiles && history.location.pathname !== "/load/" && <FileList />}
+      {packageFiles && history.location.pathname !== "/load/" && (
+        <FileList onClickFilter={stopRequest} />
+      )}
     </PageTemplate>
   );
 };

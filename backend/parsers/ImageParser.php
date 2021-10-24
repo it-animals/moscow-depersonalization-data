@@ -173,8 +173,7 @@ class ImageParser
                 'word' => $search[5]
             ];
             $startWithBig = preg_match('/^[А-ЯЁ]/u', $words[$i]['word']) ? true : false;
-            $base = mb_strtolower($words[$i]['word'], 'UTF-8');
-            $base = str_replace('ё', 'е', $base);
+            $base = $this->correctWord($words[$i]['word']);
             $length = mb_strlen($base, 'UTF-8');            
             if ($this->isPDn([$words[$i]['word']], $pdns)) {
                 $result[] = $this->unionWords([$words[$i]]);
@@ -183,15 +182,27 @@ class ImageParser
             } elseif ($i > 2 && $this->isPDn([$words[$i - 2]['word'], $words[$i - 1]['word'], $words[$i]['word']], $pdns)) {
                 $result[] = $this->unionWords([$words[$i - 2], $words[$i - 1], $words[$i]]);
             } elseif($length > 3 && $startWithBig && preg_match("/(вич|вича|вичу|вичем|виче|[ео]вна|[ео]вны|[ео]вне|[ео]вну|[ео]вной|[ео]вне)\W{0,}$/u", $base)) { //поиск отчеств по окончаниям
-                echo $base, "<br>";
                 $result[] = $this->unionWords([$words[$i]]);
             } elseif($length > 1 && $startWithBig && NameSurname::findOne(['word' => $base])) { //поиск имен и фамилий по словарю
-                echo $base, "<br>"; 
                 $result[] = $this->unionWords([$words[$i]]);
             }
         }
         return $result;
     }
+    /**
+     * Замена ошибочных латинских букв на кириллицу
+     * @param string $word слово
+     * @return string
+     */
+    private function correctWord(string $word): string {
+        $base = mb_strtolower($word, 'UTF-8');
+        //etryopahkxcbm заменяем на корректные русские буквы
+        return str_replace(
+            ['ё', 'e', 't', 'r', 'y', 'o', 'p', 'a', 'h', 'k', 'x', 'c', 'b', 'm',], 
+            ['е', 'е', 'т', 'г', 'у', 'о', 'р', 'а', 'н', 'к', 'х', 'с', 'в', 'м',], 
+            $base
+        );
+    }    
 
     /**
      * Проверка слов, что они составляют ПДн
@@ -244,7 +255,6 @@ class ImageParser
         $img = imagecreatefromjpeg($imagePath);
         $white = imagecolorallocate($img, 255, 255, 255);
         $black = imagecolorallocate($img, 0, 0, 0);
-        #$font_file = '/usr/share/fonts/truetype/freefont/FreeMono.ttf';
         $font_file = Yii::getAlias('@app/fonts/FreeMono.ttf');
         foreach ($pdns as $pdn) {
             imagefilledrectangle($img, $pdn['xMin'] - 2, $pdn['yMin'] - 2, $pdn['xMax'] + 2, $pdn['yMax'] + 2, $white);

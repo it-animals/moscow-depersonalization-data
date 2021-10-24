@@ -14,10 +14,13 @@ use yii\rest\Controller;
 use yii\web\NotFoundHttpException;
 use yii\web\UploadedFile;
 use function array_key_exists;
+use function count;
 use function date;
+use function ini_get;
 use function ini_set;
 use function is_dir;
 use function scandir;
+use function var_dump;
 
 class FileController extends Controller
 {
@@ -59,12 +62,6 @@ class FileController extends Controller
 
     public function actionUpload()
     {
-        ini_set('memory_limit', '-1');
-        ini_set('max_input_time', '0');
-        ini_set('max_execution_time', '0');
-        ini_set('upload_max_filesize', '0');
-        ini_set('post_max_size', '0');
-
         $files = UploadedFile::getInstancesByName('files');
 
         $task = new Task();

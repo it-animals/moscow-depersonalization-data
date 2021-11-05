@@ -83,7 +83,8 @@ class m211105_113131_fix_surnames extends Migration
             "юр",
             "юш",
 
-
+            "дом",
+            "доля",
         ]]);
 
         $this->batchInsert('name_surname', ['word'], [
@@ -97,6 +98,10 @@ class m211105_113131_fix_surnames extends Migration
      */
     public function safeDown()
     {
+        $this->delete('{{%name_surname}}', ['word' => [
+            "мусульбес",
+            "мусульбеса",
+        ]]);
     }
 
 

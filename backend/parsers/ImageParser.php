@@ -2,16 +2,13 @@
 
 namespace app\parsers;
 
+use app\models\AddressObject;
+use app\models\NameSurname;
 use Yii;
 use function array_filter;
 use function array_map;
 use function array_merge;
 use function exec;
-use function explode;
-use function fclose;
-use function fgets;
-use function file_exists;
-use function fopen;
 use function getimagesize;
 use function imagecolorallocate;
 use function imagecreatefromjpeg;
@@ -22,24 +19,20 @@ use function imagejpeg;
 use function imagerectangle;
 use function implode;
 use function in_array;
-use function key_exists;
 use function min;
 use function preg_match;
 use function preg_match_all;
 use function preg_replace;
 use function round;
 use function str_replace;
-use function trim;
-use function var_dump;
-use app\models\NameSurname;
-use app\models\AddressObject;
 
 /**
  * Парсер персональных данных в изображения страницы
  *
  * @author restlin
  */
-class ImageParser {
+class ImageParser
+{
 
     /**
      * исходный файл в формате картинки
@@ -65,7 +58,8 @@ class ImageParser {
      */
     private float $dpi;
 
-    public function __construct(string $imagePath, string $pdfPath, string $resultPath) {
+    public function __construct(string $imagePath, string $pdfPath, string $resultPath)
+    {
         $this->imagePath = $imagePath;
         $this->pdfPath = $pdfPath;
         $this->resultPath = $resultPath;
@@ -81,15 +75,14 @@ class ImageParser {
         $this->dpi = round($imgWidth * 2.54 / $pdfWidth);
     }
 
-    private function getPdfSize($pdfPath): array {
+    private function getPdfSize($pdfPath): array
+    {
         $command = "pdfinfo {$pdfPath} | grep 'Page size'";
         $search = [];
         $result = exec($command);
         preg_match("/([\d.]+) x ([\d.]+) ([^ ]+)/ui", $result, $search);
         if (!$search) {
-            var_dump($pdfPath);
-            var_dump($result);
-            die(1);
+            throw new \Exception("pdfinfo Error");
         }
         return [$search[1], $search[2], $search[3]];
     }
@@ -98,7 +91,8 @@ class ImageParser {
      * Парсинг файла
      * @return bool
      */
-    public function parse(): bool {
+    public function parse(): bool
+    {
         $pdns = $this->findPdns($this->pdfPath);
         $words = $this->findWords($this->pdfPath, $pdns);
         $this->hidePDnInImage($this->imagePath, $this->resultPath, $words);
@@ -110,7 +104,8 @@ class ImageParser {
      * @param string $pdfPath путь до pdf файла
      * @return array
      */
-    private function findPdns(string $pdfPath): array {
+    private function findPdns(string $pdfPath): array
+    {
         $content = [];
         exec("pdftotext -r {$this->dpi}  $pdfPath -", $content);
         $text = implode(' ', $content);
@@ -122,7 +117,8 @@ class ImageParser {
      * @param string $row строка
      * @return array
      */
-    private function findPdnInRow(string $row): array {
+    private function findPdnInRow(string $row): array
+    {
         $result = [];
         $matches = [];
         //ETOPAHKXCBM eryopaxc - латинские буквы, похожие визуально на кириллицу
@@ -167,7 +163,8 @@ class ImageParser {
      * @param array $pdns массив ПДн
      * @return array
      */
-    private function findWords(string $pdfPath, array $pdns): array {
+    private function findWords(string $pdfPath, array $pdns): array
+    {
         $content = [];
         exec("pdftotext -bbox -r {$this->dpi}  $pdfPath - | grep word", $content);
         $search = [];
@@ -207,13 +204,14 @@ class ImageParser {
      * @param string $word слово
      * @return string
      */
-    private function correctWord(string $word): string {
+    private function correctWord(string $word): string
+    {
         $base = mb_strtolower($word, 'UTF-8');
         //etryopahkxcbm заменяем на корректные русские буквы
         return str_replace(
-                ['ё', 'e', 't', 'r', 'y', 'o', 'p', 'a', 'h', 'k', 'x', 'c', 'b', 'm',],
-                ['е', 'е', 'т', 'г', 'у', 'о', 'р', 'а', 'н', 'к', 'х', 'с', 'в', 'м',],
-                $base
+            ['ё', 'e', 't', 'r', 'y', 'o', 'p', 'a', 'h', 'k', 'x', 'c', 'b', 'm',],
+            ['е', 'е', 'т', 'г', 'у', 'о', 'р', 'а', 'н', 'к', 'х', 'с', 'в', 'м',],
+            $base
         );
     }
 
@@ -223,7 +221,8 @@ class ImageParser {
      * @param array $pdns массив ПДн
      * @return bool
      */
-    private function isPDn(array $words, array $pdns): bool {
+    private function isPDn(array $words, array $pdns): bool
+    {
         $check = implode(' ', $words);
         //ETOPAHKXCBM eryopaxc - латинские буквы, похожие визуально на кириллицу
         $check = preg_replace('/[^ .а-яёetryopahkxcbm]/ui', '', $check);
@@ -235,7 +234,8 @@ class ImageParser {
      * @param array $words массив заменяемых слов
      * @return array
      */
-    private function unionWords(array $words): array {
+    private function unionWords(array $words): array
+    {
         $xMin = $words[0]['xMin'];
         $yMin = $words[0]['yMin'];
         $xMax = $words[0]['xMax'];
@@ -261,7 +261,8 @@ class ImageParser {
      * @param string $resultPath исходящая картинка
      * @param array $pdns массив скрываемых ПДн
      */
-    private function hidePDnInImage(string $imagePath, string $resultPath, array $pdns) {
+    private function hidePDnInImage(string $imagePath, string $resultPath, array $pdns)
+    {
         ini_set('memory_limit', '-1');
         $img = imagecreatefromjpeg($imagePath);
         $white = imagecolorallocate($img, 255, 255, 255);

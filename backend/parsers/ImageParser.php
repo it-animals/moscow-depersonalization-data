@@ -32,38 +32,40 @@ use function str_replace;
 use function trim;
 use function var_dump;
 use app\models\NameSurname;
+use app\models\AddressObject;
 
 /**
  * Парсер персональных данных в изображения страницы
  *
  * @author restlin
  */
-class ImageParser
-{    
+class ImageParser {
+
     /**
      * исходный файл в формате картинки
      * @var string
      */
     private string $imagePath;
+
     /**
      * исходный файл в pdf с текстом
      * @var string
      */
     private string $pdfPath;
+
     /**
      * результирующая картинка с заменой ПДн
      * @var string
      */
     private string $resultPath;
+
     /**
      * PDI исходного изображения
      * @var float
      */
     private float $dpi;
-    
 
-    public function __construct(string $imagePath, string $pdfPath, string $resultPath)
-    {
+    public function __construct(string $imagePath, string $pdfPath, string $resultPath) {
         $this->imagePath = $imagePath;
         $this->pdfPath = $pdfPath;
         $this->resultPath = $resultPath;
@@ -79,8 +81,7 @@ class ImageParser
         $this->dpi = round($imgWidth * 2.54 / $pdfWidth);
     }
 
-    private function getPdfSize($pdfPath): array
-    {
+    private function getPdfSize($pdfPath): array {
         $command = "pdfinfo {$pdfPath} | grep 'Page size'";
         $search = [];
         $result = exec($command);
@@ -97,8 +98,7 @@ class ImageParser
      * Парсинг файла
      * @return bool
      */
-    public function parse(): bool
-    {
+    public function parse(): bool {
         $pdns = $this->findPdns($this->pdfPath);
         $words = $this->findWords($this->pdfPath, $pdns);
         $this->hidePDnInImage($this->imagePath, $this->resultPath, $words);
@@ -110,8 +110,7 @@ class ImageParser
      * @param string $pdfPath путь до pdf файла
      * @return array
      */
-    private function findPdns(string $pdfPath): array
-    {
+    private function findPdns(string $pdfPath): array {
         $content = [];
         exec("pdftotext -r {$this->dpi}  $pdfPath -", $content);
         $text = implode(' ', $content);
@@ -120,7 +119,7 @@ class ImageParser
 
     /**
      * Поиск ПДн в строке
-     * @param string $row строка 
+     * @param string $row строка
      * @return array
      */
     private function findPdnInRow(string $row): array {
@@ -128,26 +127,38 @@ class ImageParser
         $matches = [];
         //ETOPAHKXCBM eryopaxc - латинские буквы, похожие визуально на кириллицу
         preg_match_all('/(?<!им\.|им\. |имени|имени )[А-ЯЁETOPAHKXCBM][.,] {0,5}[А-ЯЁETOPAHKXCBM][.,] {0,5}[А-ЯЁETOPAHKXCBM][а-яёeryopaxc]{2,25}/u', $row, $matches);
-        if($matches) {
+        if ($matches) {
             $result = array_merge($result, $matches[0]);
         }
         preg_match_all('/(?<!им\.|им\. |имени|имени )[А-ЯЁETOPAHKXCBM][а-яёeryopaxc]{2,25} {0,5}[А-ЯЁETOPAHKXCBM][,.] {0,5}[А-ЯЁETOPAHKXCBM][.,]/u', $row, $matches);
-        if($matches) {
+        if ($matches) {
             $result = array_merge($result, $matches[0]);
-        }            
-        preg_match_all('/(?<!им\.|им\. |имени|имени )[А-ЯЁETOPAHKXCBM][а-яёeryopaxc]{2,25}[ .,]{0,5}[А-ЯЁETOPAHKXCBM][а-яёeryopaxc]{2,25}[ .,]{0,5}[А-ЯЁETOPAHKXCBM][а-яёeryopaxc]{2,25}/u', $row, $matches);        
-        if($matches) {
+        }
+        preg_match_all('/(?<!им\.|им\. |имени|имени )[А-ЯЁETOPAHKXCBM][а-яёeryopaxc]{2,25}[ .,]{0,5}[А-ЯЁETOPAHKXCBM][а-яёeryopaxc]{2,25}[ .,]{0,5}[А-ЯЁETOPAHKXCBM][а-яёeryopaxc]{2,25}/u', $row, $matches);
+        if ($matches) {
             $result = array_merge($result, $matches[0]);
-        }        
-        $result = array_filter($result, function($pdn) {
-            if(preg_match("/правительств|москв|росси|консультант|труд|отдел|управлени|департамент|заместител|начальник/ui", $pdn)) {
+        }
+        $result = array_filter($result, function ($pdn) {
+            if (preg_match("/правительств|москв|росси|консультант|труд|отдел|управлени|департамент|заместител|начальник/ui", $pdn)) {
                 return false;
             }
             return true;
         });
-        return array_map(function($pdn) {
-            return str_replace(',', '', $pdn);            
-        }, $result);        
+        $result = array_map(function ($pdn) {
+            return str_replace(',', '', $pdn);
+        }, $result);
+
+        //поиск email адресов
+        preg_match_all('/[a-z0-9\-_]+@[a-zа-яё\.\-_]+/ui', $row, $matches);
+        if ($matches) {
+            $result = array_merge($result, $matches[0]);
+        }
+        //поиск телефонов
+        preg_match_all('/(+79|89)[0-9\- (]{8,15}/i', $row, $matches);
+        if ($matches) {
+            $result = array_merge($result, $matches[0]);
+        }
+        return $result;
     }
 
     /**
@@ -156,8 +167,7 @@ class ImageParser
      * @param array $pdns массив ПДн
      * @return array
      */
-    private function findWords(string $pdfPath, array $pdns): array
-    {
+    private function findWords(string $pdfPath, array $pdns): array {
         $content = [];
         exec("pdftotext -bbox -r {$this->dpi}  $pdfPath - | grep word", $content);
         $search = [];
@@ -174,21 +184,24 @@ class ImageParser
             ];
             $startWithBig = preg_match('/^[А-ЯЁ][а-яё]/u', $words[$i]['word']) ? true : false;
             $base = $this->correctWord($words[$i]['word']);
-            $length = mb_strlen($base, 'UTF-8');            
+            $length = mb_strlen($base, 'UTF-8');
             if ($this->isPDn([$words[$i]['word']], $pdns)) {
                 $result[] = $this->unionWords([$words[$i]]);
             } elseif ($i > 1 && $this->isPDn([$words[$i - 1]['word'], $words[$i]['word']], $pdns)) {
                 $result[] = $this->unionWords([$words[$i - 1], $words[$i]]);
             } elseif ($i > 2 && $this->isPDn([$words[$i - 2]['word'], $words[$i - 1]['word'], $words[$i]['word']], $pdns)) {
                 $result[] = $this->unionWords([$words[$i - 2], $words[$i - 1], $words[$i]]);
-            } elseif($length > 3 && $startWithBig && preg_match("/(вич|вича|вичу|вичем|виче|[ео]вна|[ео]вны|[ео]вне|[ео]вну|[ео]вной|[ео]вне)\W{0,}$/u", $base)) { //поиск отчеств по окончаниям
+            } elseif ($length > 3 && $startWithBig && preg_match("/(вич|вича|вичу|вичем|виче|[ео]вна|[ео]вны|[ео]вне|[ео]вну|[ео]вной|[ео]вне)\W{0,}$/u", $base)) { //поиск отчеств по окончаниям
                 $result[] = $this->unionWords([$words[$i]]);
-            } elseif($length > 1 && $startWithBig && NameSurname::findOne(['word' => $base])) { //поиск имен и фамилий по словарю
+            } elseif ($length > 1 && $startWithBig && NameSurname::findOne(['word' => $base])) { //поиск имен и фамилий по словарю
+                $result[] = $this->unionWords([$words[$i]]);
+            } elseif ($length > 1 && $startWithBig && AddressObject::findOne(['word' => $base])) { //поиск объектов адресов по словарю
                 $result[] = $this->unionWords([$words[$i]]);
             }
         }
         return $result;
     }
+
     /**
      * Замена ошибочных латинских букв на кириллицу
      * @param string $word слово
@@ -198,11 +211,11 @@ class ImageParser
         $base = mb_strtolower($word, 'UTF-8');
         //etryopahkxcbm заменяем на корректные русские буквы
         return str_replace(
-            ['ё', 'e', 't', 'r', 'y', 'o', 'p', 'a', 'h', 'k', 'x', 'c', 'b', 'm',], 
-            ['е', 'е', 'т', 'г', 'у', 'о', 'р', 'а', 'н', 'к', 'х', 'с', 'в', 'м',], 
-            $base
+                ['ё', 'e', 't', 'r', 'y', 'o', 'p', 'a', 'h', 'k', 'x', 'c', 'b', 'm',],
+                ['е', 'е', 'т', 'г', 'у', 'о', 'р', 'а', 'н', 'к', 'х', 'с', 'в', 'м',],
+                $base
         );
-    }    
+    }
 
     /**
      * Проверка слов, что они составляют ПДн
@@ -213,7 +226,7 @@ class ImageParser
     private function isPDn(array $words, array $pdns): bool {
         $check = implode(' ', $words);
         //ETOPAHKXCBM eryopaxc - латинские буквы, похожие визуально на кириллицу
-        $check = preg_replace('/[^ .а-яёetryopahkxcbm]/ui','',$check);        
+        $check = preg_replace('/[^ .а-яёetryopahkxcbm]/ui', '', $check);
         return in_array($check, $pdns);
     }
 
@@ -222,8 +235,7 @@ class ImageParser
      * @param array $words массив заменяемых слов
      * @return array
      */
-    private function unionWords(array $words): array
-    {
+    private function unionWords(array $words): array {
         $xMin = $words[0]['xMin'];
         $yMin = $words[0]['yMin'];
         $xMax = $words[0]['xMax'];
@@ -249,8 +261,7 @@ class ImageParser
      * @param string $resultPath исходящая картинка
      * @param array $pdns массив скрываемых ПДн
      */
-    private function hidePDnInImage(string $imagePath, string $resultPath, array $pdns)
-    {
+    private function hidePDnInImage(string $imagePath, string $resultPath, array $pdns) {
         ini_set('memory_limit', '-1');
         $img = imagecreatefromjpeg($imagePath);
         $white = imagecolorallocate($img, 255, 255, 255);
@@ -264,4 +275,5 @@ class ImageParser
         imagejpeg($img, $resultPath);
         imagedestroy($img);
     }
+
 }

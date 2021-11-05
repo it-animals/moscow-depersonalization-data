@@ -85,6 +85,12 @@ class m211105_113131_fix_surnames extends Migration
 
             "дом",
             "доля",
+            "закон",
+            "закона",
+            "закону",
+            "законом",
+            "законе",
+
         ]]);
 
         $this->batchInsert('name_surname', ['word'], [

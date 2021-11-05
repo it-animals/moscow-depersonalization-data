@@ -5,7 +5,7 @@ import { Alert, Button, Paper, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { fileService } from "../../service/file/fileService";
 import { motion } from "framer-motion";
-import { upToDownAnimate, upToDownFn } from "../lib/animations/upToDownAnimate";
+import { upToDownFn } from "../lib/animations/upToDownAnimate";
 import { uploadFileAnimate } from "../lib/animations/uploadFileAnimate";
 import { Loader } from "../components/loader/Loader";
 import { useAppDispatch } from "../../service/store/store";
@@ -99,7 +99,7 @@ export const LoadPage: CT<unknown> = () => {
 
       {!!files.length && !processLoad && (
         <>
-          <AlertComponent {...upToDownFn(0.4, 0.8)} severity="info">
+          <AlertComponent {...upToDownFn(0.4, 0.6)} severity="info">
             <Typography fontWeight={"bold"}>
               Обработка файлов находится в экспериментальном режиме
             </Typography>
@@ -114,7 +114,7 @@ export const LoadPage: CT<unknown> = () => {
               </li>
             </ul>
           </AlertComponent>
-          <ButtonPanel {...upToDownFn(0.4, 1)}>
+          <ButtonPanel {...upToDownFn(0.4, 0.8)}>
             <Button
               color={"secondary"}
               variant={"contained"}

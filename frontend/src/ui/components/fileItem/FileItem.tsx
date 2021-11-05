@@ -17,7 +17,7 @@ import {
   FileType,
 } from "../../../domain/file";
 import { motion } from "framer-motion";
-import { upToDownAnimate } from "../../lib/animations/upToDownAnimate";
+import { upToDownFn } from "../../lib/animations/upToDownAnimate";
 import { Link } from "react-router-dom";
 import {
   KeyboardArrowDownOutlined,
@@ -140,12 +140,7 @@ export const FileItem: CT<{ item: FileType; showAnimate: boolean }> = ({
   return (
     <Container
       title={item.name}
-      {...upToDownAnimate}
-      transition={{
-        delay: showAnimate ? 0.6 : 0,
-        duration: showAnimate ? 0.3 : 0.3,
-        ease: ["easeInOut"],
-      }}
+      {...upToDownFn(showAnimate ? 0.6 : 0, showAnimate ? 0.6 : 0)}
     >
       <Typography
         style={{

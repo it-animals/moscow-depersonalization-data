@@ -6,7 +6,7 @@ import { useCallback, useContext, useEffect, useState } from "react";
 import { PackageType } from "../../domain/package";
 import { taskService } from "../../service/task/taskService";
 import { motion } from "framer-motion";
-import { upToDownAnimate } from "../lib/animations/upToDownAnimate";
+import { upToDownFn } from "../lib/animations/upToDownAnimate";
 import { LoadContext } from "../features/common/LoadContextProvider";
 import useUrlState from "@ahooksjs/use-url-state";
 import { Filter } from "../components/filter/Filter";
@@ -39,6 +39,7 @@ type FilterType = 1 | 2 | 3 | 4 | 0;
 export const PackageListPage: CT<unknown> = () => {
   const [list, setList] = useState<PackageType[]>([]);
   const loadContextData = useContext(LoadContext);
+  const [isExistLoad, setExistLoad] = useState(false);
   const [urlState, setUrlState] = useUrlState<{
     filterBy: FilterType;
   }>({ filterBy: 0 });
@@ -52,6 +53,8 @@ export const PackageListPage: CT<unknown> = () => {
           loadContextData.setLoad(setTimeout(load, 3000));
         } catch (e) {
           console.log(e);
+        } finally {
+          setExistLoad(true);
         }
       };
       load();
@@ -79,14 +82,7 @@ export const PackageListPage: CT<unknown> = () => {
 
   return (
     <PageTemplate>
-      <TopLine
-        {...upToDownAnimate}
-        transition={{
-          delay: 0,
-          duration: 0.3,
-          ease: ["easeInOut"],
-        }}
-      >
+      <TopLine {...upToDownFn(0.3, 0)}>
         <Typography
           style={{ textDecoration: "underline" }}
           color={"secondary.main"}
@@ -104,14 +100,7 @@ export const PackageListPage: CT<unknown> = () => {
           </Button>
         </a>
       </TopLine>
-      <FilterLine
-        {...upToDownAnimate}
-        transition={{
-          ease: ["easeInOut"],
-          duration: 0.3,
-          delay: 0.1,
-        }}
-      >
+      <FilterLine {...upToDownFn(0.3, 0.15)}>
         <Typography fontWeight={"bold"}>Фильтры:&nbsp;&nbsp;&nbsp;</Typography>
         <FilterContent>
           <Filter
@@ -153,32 +142,23 @@ export const PackageListPage: CT<unknown> = () => {
         columnSpacing={10}
         justifyContent={"flex-start"}
       >
-        {filteredData.length > 0 ? (
-          filteredData.map((item) => {
-            return (
-              <LinePackage
-                {...upToDownAnimate}
-                transition={{
-                  ease: ["easeInOut"],
-                  duration: 0.4,
-                  delay: 0.1,
-                }}
-                item
-                xs={4}
-              >
-                <PackageItem
-                  onShowClick={stopLoadHandler}
-                  id={item.id}
-                  status={item.status}
-                />
-              </LinePackage>
-            );
-          })
-        ) : (
-          <Grid item xs={4}>
-            <Typography variant={"h6"}>Пакеты не найдены</Typography>
-          </Grid>
-        )}
+        {filteredData.length > 0
+          ? filteredData.map((item) => {
+              return (
+                <LinePackage {...upToDownFn(0.4, 0.22)} item xs={4}>
+                  <PackageItem
+                    onShowClick={stopLoadHandler}
+                    id={item.id}
+                    status={item.status}
+                  />
+                </LinePackage>
+              );
+            })
+          : isExistLoad && (
+              <Grid item xs={4}>
+                <Typography variant={"h6"}>Пакеты не найдены</Typography>
+              </Grid>
+            )}
       </Grid>
     </PageTemplate>
   );

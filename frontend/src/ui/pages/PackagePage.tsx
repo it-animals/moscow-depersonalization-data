@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { Button, Paper } from "@mui/material";
 import { useCallback, useContext, useEffect } from "react";
 import { motion } from "framer-motion";
-import { upToDownAnimate } from "../lib/animations/upToDownAnimate";
+import { upToDownFn } from "../lib/animations/upToDownAnimate";
 import { Loader } from "../components/loader/Loader";
 import { taskService } from "../../service/task/taskService";
 import { useAppDispatch, useAppSelector } from "../../service/store/store";
@@ -105,14 +105,7 @@ export const PackagePage: CT<unknown> = () => {
 
   return (
     <PageTemplate>
-      <TopLine
-        {...upToDownAnimate}
-        transition={{
-          delay: 0,
-          duration: 0.3,
-          ease: ["easeIn"],
-        }}
-      >
+      <TopLine {...upToDownFn(0.22, 0)}>
         <a href={"/"}>
           <Button
             variant={"contained"}
@@ -138,14 +131,7 @@ export const PackagePage: CT<unknown> = () => {
         </a>
       </TopLine>
       {
-        <StatusWrapper
-          {...upToDownAnimate}
-          transition={{
-            delay: 0.0,
-            duration: 0.3,
-            ease: ["easeIn"],
-          }}
-        >
+        <StatusWrapper {...upToDownFn(0.22, 0)}>
           <PackageStatus packageFile={packageFiles ?? null} />
         </StatusWrapper>
       }

@@ -10,12 +10,11 @@ import { FileItem } from "../../components/fileItem/FileItem";
 import styled from "styled-components";
 import { motion } from "framer-motion";
 import SearchIcon from "@mui/icons-material/Search";
-import { upToDownAnimate } from "../../lib/animations/upToDownAnimate";
+import { upToDownFn } from "../../lib/animations/upToDownAnimate";
 import { useState } from "react";
 import useUrlState from "@ahooksjs/use-url-state";
 import { Filter } from "../../components/filter/Filter";
 import { PackageType } from "../../../domain/package";
-import { loadContextData } from "../common/LoadContextProvider";
 
 const SearchLine = styled(motion.div)`
   min-height: 60px;
@@ -103,14 +102,7 @@ export const FileList: CT<{ onClickFilter: VoidFunction }> = ({
 
   return (
     <>
-      <SearchLine
-        {...upToDownAnimate}
-        transition={{
-          delay: !existSearch ? 0.3 : 0,
-          duration: !existSearch ? 0.3 : 0,
-          ease: ["easeInOut"],
-        }}
-      >
+      <SearchLine {...upToDownFn(!existSearch ? 0.3 : 0, !existSearch ? 0 : 0)}>
         <Box sx={{ width: "70%", display: "flex", alignItems: "flex-end" }}>
           <SearchIcon sx={{ color: "second.main", mr: 1, my: 0.5 }} />
           <TextField
@@ -139,14 +131,7 @@ export const FileList: CT<{ onClickFilter: VoidFunction }> = ({
           </Button>
         </ButtonWrapper>
       </SearchLine>
-      <FilterLine
-        {...upToDownAnimate}
-        transition={{
-          ease: ["easeInOut"],
-          duration: 0.3,
-          delay: 0.3,
-        }}
-      >
+      <FilterLine {...upToDownFn(0.3, 0.3)}>
         <Typography fontWeight={"bold"}>Фильтры:&nbsp;&nbsp;&nbsp;</Typography>
         <FilterContent>
           <Filter

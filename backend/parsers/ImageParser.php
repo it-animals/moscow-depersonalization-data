@@ -154,7 +154,7 @@ class ImageParser {
             $result = array_merge($result, $matches[0]);
         }
         //поиск телефонов
-        preg_match_all('/(+79|89)[0-9\- \(\)]{8,15}/i', $row, $matches);
+        preg_match_all('/(\+79|89)[0-9\- \(\)]{8,15}/i', $row, $matches);
         if ($matches) {
             $result = array_merge($result, $matches[0]);
         }

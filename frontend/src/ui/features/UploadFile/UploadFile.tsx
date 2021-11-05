@@ -30,6 +30,7 @@ const CenterContent = styled(motion.div)`
   left: 50%;
   width: 100%;
   display: flex;
+  height: auto;
   flex-direction: column;
   align-items: center;
   justify-content: center;
@@ -123,41 +124,6 @@ export const UploadFile: CT<{
     onLoad(files);
   }, [files]);
 
-  const loadAnimate = !isLoaded
-    ? {
-        initial: {
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%,-50%)",
-        },
-        animate: {
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%,-50%)",
-        },
-        transition: {
-          duration: 0,
-          delay: 0,
-        },
-      }
-    : {
-        initial: {
-          top: "50%",
-          left: "0",
-          opacity: "0 !important",
-          transform: "translate(-50%,-50%)",
-        },
-        animate: {
-          top: "50%",
-          left: "25px",
-          transform: "translate(0%,-50%)",
-        },
-        transition: {
-          duration: 0.6,
-          delay: 0.5,
-        },
-      };
-
   return (
     <Form
       style={{ opacity: isDragEnter ? 0.2 : 1 }}
@@ -172,7 +138,7 @@ export const UploadFile: CT<{
           type={"file"}
           multiple
         />
-        <CenterContent {...loadAnimate}>
+        <CenterContent>
           {!isLoaded ? (
             <Grid container justifyContent={"center"} justifyItems={"center"}>
               <Grid item xs={12}>
@@ -190,8 +156,8 @@ export const UploadFile: CT<{
               </Grid>
             </Grid>
           ) : (
-            <Grid container>
-              <Grid>
+            <Grid container paddingLeft={"25px"}>
+              <Grid item>
                 <Typography variant={"h5"}>
                   <TextDecoration color={accentColor}>
                     Выбранные файлы

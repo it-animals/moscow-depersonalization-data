@@ -1,11 +1,11 @@
 import { PageTemplate } from "../components/templates/PageTemplate";
 import { UploadFile } from "../features/UploadFile/UploadFile";
 import styled from "styled-components";
-import { Button, Paper } from "@mui/material";
+import { Alert, Button, Paper, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { fileService } from "../../service/file/fileService";
 import { motion } from "framer-motion";
-import { upToDownAnimate } from "../lib/animations/upToDownAnimate";
+import { upToDownAnimate, upToDownFn } from "../lib/animations/upToDownAnimate";
 import { uploadFileAnimate } from "../lib/animations/uploadFileAnimate";
 import { Loader } from "../components/loader/Loader";
 import { useAppDispatch } from "../../service/store/store";
@@ -22,9 +22,9 @@ const UploadContainer = styled(motion(Paper))`
 
 const ButtonPanel = styled(motion.div)`
   display: flex;
-  min-height: 50px;
   justify-content: flex-end;
   align-items: center;
+  margin-top: 15px;
   column-gap: 20px;
 `;
 
@@ -44,6 +44,15 @@ const TopLine = styled.div`
   align-items: center;
   justify-content: space-between;
   margin-bottom: 40px;
+`;
+
+const AlertComponent = styled(motion(Alert))`
+  margin-top: 15px;
+  & ul {
+    & li {
+      list-style: inside disc;
+    }
+  }
 `;
 
 export const LoadPage: CT<unknown> = () => {
@@ -87,23 +96,37 @@ export const LoadPage: CT<unknown> = () => {
         <UploadFile isLoaded={!!files.length} onLoad={loadFileHandler} />
         {processLoad && <FormLoader />}
       </UploadContainer>
+
       {!!files.length && !processLoad && (
-        <ButtonPanel
-          initial={upToDownAnimate.initial}
-          animate={upToDownAnimate.animate}
-          transition={upToDownAnimate.transition}
-        >
-          <Button
-            color={"secondary"}
-            variant={"contained"}
-            onClick={submitHandler}
-          >
-            Обработать
-          </Button>
-          <Button onClick={clearHandler} variant={"contained"}>
-            Сбросить
-          </Button>
-        </ButtonPanel>
+        <>
+          <AlertComponent {...upToDownFn(0.4, 0.8)} severity="info">
+            <Typography fontWeight={"bold"}>
+              Обработка файлов находится в экспериментальном режиме
+            </Typography>
+            <br />
+            <Typography> Добавлено:</Typography>
+            <ul>
+              <li>
+                <Typography>Поиск и удаление email, телефонов;</Typography>
+              </li>
+              <li>
+                <Typography>Поиск и удаление адресов</Typography>
+              </li>
+            </ul>
+          </AlertComponent>
+          <ButtonPanel {...upToDownFn(0.4, 1)}>
+            <Button
+              color={"secondary"}
+              variant={"contained"}
+              onClick={submitHandler}
+            >
+              Обработать
+            </Button>
+            <Button onClick={clearHandler} variant={"contained"}>
+              Сбросить
+            </Button>
+          </ButtonPanel>
+        </>
       )}
     </PageTemplate>
   );

@@ -44,11 +44,6 @@ const ButtonWrapper = styled.div`
   justify-content: space-between;
 `;
 
-const Count = styled.div`
-  width: 100%;
-  margin-bottom: 15px;
-`;
-
 type FilterType = 1 | 2 | 3 | 4 | 0;
 
 export const FileList: CT<{ onClickFilter: VoidFunction }> = ({

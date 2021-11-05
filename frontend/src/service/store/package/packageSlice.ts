@@ -2,48 +2,6 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../store";
 import { PackageType } from "../../../domain/package";
 
-const mock = {
-  id: 1,
-  date_start: "21.10.2021 12:52:05 UTC",
-  date_end: null,
-  status: 3,
-  files: [
-    {
-      id: 1,
-      task_id: 1,
-      name: "Frame 18298 — копия 2.png",
-      date_start: "21.10.2021 12:52:05 UTC",
-      date_end: null,
-      status: 1,
-      base_path: "/app/files/0/1/Frame 18298 — копия 2.png",
-      result_path: null,
-      image_path: null,
-    },
-    {
-      id: 2,
-      task_id: 1,
-      name: "Frame 18298 — копия 3.png",
-      date_start: "21.10.2021 12:52:05 UTC",
-      date_end: null,
-      status: 2,
-      base_path: "/app/files/0/2/Frame 18298 — копия 3.png",
-      result_path: null,
-      image_path: null,
-    },
-    {
-      id: 3,
-      task_id: 1,
-      name: "Frame 18298 — копия 4.png",
-      date_start: "21.10.2021 12:52:05 UTC",
-      date_end: null,
-      status: 3,
-      base_path: "/app/files/0/3/Frame 18298 — копия 4.png",
-      result_path: null,
-      image_path: null,
-    },
-  ],
-};
-
 const initialState = {
   package: null,
   filteredPackage: null,

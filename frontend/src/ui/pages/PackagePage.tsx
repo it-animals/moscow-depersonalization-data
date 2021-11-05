@@ -1,10 +1,9 @@
 import { PageTemplate } from "../components/templates/PageTemplate";
 import styled from "styled-components";
-import { Button, Paper } from "@mui/material";
-import { useCallback, useContext, useEffect } from "react";
+import { Button } from "@mui/material";
+import { useCallback, useEffect } from "react";
 import { motion } from "framer-motion";
 import { upToDownFn } from "../lib/animations/upToDownAnimate";
-import { Loader } from "../components/loader/Loader";
 import { taskService } from "../../service/task/taskService";
 import { useAppDispatch, useAppSelector } from "../../service/store/store";
 import {
@@ -15,36 +14,8 @@ import {
 import { FileList } from "../features/FileList/FileList";
 import { useHistory, useParams } from "react-router-dom";
 import { PackageStatus } from "../components/packageStatus/PackageStatus";
-import {
-  LoadContext,
-  loadContextData,
-  LoadContextType,
-} from "../features/common/LoadContextProvider";
+import { loadContextData } from "../features/common/LoadContextProvider";
 import { useTitle } from "ahooks";
-
-const UploadContainer = styled(motion(Paper))`
-  width: 100%;
-  height: 540px;
-  position: relative;
-  padding: 20px;
-`;
-
-const ButtonPanel = styled(motion.div)`
-  display: flex;
-  min-height: 50px;
-  justify-content: flex-end;
-  align-items: center;
-  column-gap: 20px;
-`;
-
-const FormLoader = styled(Loader)`
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 11;
-`;
 
 const TopLine = styled(motion.div)`
   width: 100%;
@@ -60,16 +31,16 @@ const StatusWrapper = styled(motion.div)`
 `;
 
 export const PackagePage: CT<unknown> = () => {
-  const contextLoad = useContext<LoadContextType>(LoadContext);
   const params = useParams<{ packageId?: string }>();
-
   const dispath = useAppDispatch();
   const packageFiles = useAppSelector(selectPackage);
   const history = useHistory();
+
   useTitle("Просмотр пакета");
 
   const stopRequest = useCallback(() => {
     loadContextData.clearLoad();
+    //eslint-disable-next-line
   }, []);
 
   useEffect(() => {
@@ -90,10 +61,12 @@ export const PackagePage: CT<unknown> = () => {
       }
     };
     load();
+    //eslint-disable-next-line
   }, [params]);
 
   useEffect(() => {
     dispath(clearAllPackage());
+    //eslint-disable-next-line
   }, []);
 
   useEffect(() => {
@@ -101,6 +74,7 @@ export const PackagePage: CT<unknown> = () => {
       loadContextData.clearLoad();
       dispath(clearAllPackage());
     };
+    //eslint-disable-next-line
   }, []);
 
   return (

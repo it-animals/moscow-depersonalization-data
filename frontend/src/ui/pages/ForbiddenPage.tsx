@@ -7,12 +7,15 @@ import { useTitle } from "ahooks";
 
 export const ForbiddenPage: CT<unknown> = () => {
   const dispatch = useAppDispatch();
+  useTitle("Недостаточно прав");
+
   useEffect(() => {
     return () => {
       dispatch(clearAppError());
     };
+    //eslint-disable-next-line
   }, []);
-  useTitle("Недостаточно прав");
+
   return (
     <>
       <PageTemplate>

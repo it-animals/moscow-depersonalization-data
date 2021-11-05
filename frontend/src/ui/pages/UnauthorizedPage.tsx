@@ -7,12 +7,15 @@ import { useTitle } from "ahooks";
 
 export const UnauthorizedPage: CT<unknown> = () => {
   const dispatch = useAppDispatch();
+  useTitle("Необходима авторизация");
+
   useEffect(() => {
     return () => {
       dispatch(clearAppError());
     };
+    //eslint-disable-next-line
   }, []);
-  useTitle("Необходима авторизация");
+
   return (
     <>
       <PageTemplate>

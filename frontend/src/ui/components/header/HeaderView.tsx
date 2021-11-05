@@ -53,6 +53,7 @@ export const HeaderView: CT<unknown> = () => {
         pathname: `/${path}/${params.id}/1`,
       });
     }
+    //eslint-disable-next-line
   }, [params, countImages]);
 
   return (

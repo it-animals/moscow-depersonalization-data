@@ -7,12 +7,14 @@ import { useTitle } from "ahooks";
 
 export const NotFoundPage: CT<unknown> = () => {
   const dispatch = useAppDispatch();
+  useTitle("Страница не найдена");
+
   useEffect(() => {
     return () => {
       dispatch(clearAppError());
     };
+    //eslint-disable-next-line
   }, []);
-  useTitle("Страница не найдена");
   return (
     <>
       <PageTemplate>

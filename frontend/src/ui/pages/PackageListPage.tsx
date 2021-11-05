@@ -59,11 +59,13 @@ export const PackageListPage: CT<unknown> = () => {
       };
       load();
     })();
+    //eslint-disable-next-line
   }, []);
 
   const stopLoadHandler = useCallback(() => {
     loadContextData.clearLoad();
     taskService.stop();
+    //eslint-disable-next-line
   }, []);
 
   const filterBy = (

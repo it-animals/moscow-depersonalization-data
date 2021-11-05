@@ -122,6 +122,7 @@ export const UploadFile: CT<{
 
   useEffect(() => {
     onLoad(files);
+    //eslint-disable-next-line
   }, [files]);
 
   return (

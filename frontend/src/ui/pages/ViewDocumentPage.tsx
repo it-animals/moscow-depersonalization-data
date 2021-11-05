@@ -49,10 +49,13 @@ export const ViewDocumentPage: CT<unknown> = () => {
   const dispatch = useAppDispatch();
   const history = useHistory();
 
+  useTitle("Просмотр документа");
+
   useEffect(() => {
     return () => {
       dispatch(clearViewFile);
     };
+    //eslint-disable-next-line
   }, []);
 
   useEffect(() => {
@@ -61,9 +64,9 @@ export const ViewDocumentPage: CT<unknown> = () => {
       //@ts-ignore
       refSlider.current.slickGoTo(Number(params.image - 1));
     }, 0);
+    //eslint-disable-next-line
   }, [refSlider, viewFile, params.image]);
 
-  useTitle("Просмотр документа");
   useEffect(() => {
     if (!viewFile) {
       (async () => {
@@ -82,7 +85,9 @@ export const ViewDocumentPage: CT<unknown> = () => {
         }
       })();
     }
+    //eslint-disable-next-line
   }, [viewFile]);
+
   const path = appConfig.apiUrl;
   return (
     <PageTemplateView>

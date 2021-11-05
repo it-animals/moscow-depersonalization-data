@@ -1,5 +1,4 @@
 import { AppBar, Box, Toolbar, Typography } from "@mui/material";
-import { Link } from "react-router-dom";
 import styled from "styled-components";
 import Logo from "../../../assets/login.svg";
 import Dit from "../../../assets/dit.svg";
@@ -17,34 +16,6 @@ const LogoLink = styled.a`
   &:hover {
     color: white;
     text-decoration: underline;
-  }
-`;
-
-const NavLink = styled(Link)`
-  text-decoration: none;
-  color: white;
-
-  &:active {
-    color: white;
-  }
-
-  &:hover {
-    color: white;
-    text-decoration: underline;
-  }
-`;
-
-const Nav = styled.nav`
-  display: flex;
-  margin-left: 125px;
-  height: 100%;
-  align-items: center;
-
-  & ul {
-    display: flex;
-    column-gap: 20px;
-    align-items: center;
-    height: 100%;
   }
 `;
 
@@ -81,6 +52,7 @@ export const Header: CT<unknown> = () => {
                 <a
                   href="https://leaders2021.innoagency.ru/?utm_source=telegram&utm_medium=smm"
                   target={"_blank"}
+                  rel="noreferrer"
                 >
                   <ImageWrap>
                     <img src={Logo} alt="" />
@@ -93,17 +65,29 @@ export const Header: CT<unknown> = () => {
                 </LogoLink>
               </Part>
               <Part>
-                <a href="https://www.mos.ru/dpir/" target={"_blank"}>
+                <a
+                  href="https://www.mos.ru/dpir/"
+                  target={"_blank"}
+                  rel="noreferrer"
+                >
                   <ImageWrap>
                     <img src={Dpi} style={{ height: 38, width: 142 }} alt="" />
                   </ImageWrap>
                 </a>
-                <a href="https://innoagency.ru/ru/" target={"_blank"}>
+                <a
+                  href="https://innoagency.ru/ru/"
+                  target={"_blank"}
+                  rel="noreferrer"
+                >
                   <ImageWrap>
                     <img src={Aim} style={{ height: 38, width: 142 }} alt="" />
                   </ImageWrap>
                 </a>
-                <a href="https://www.mos.ru/dit/" target={"_blank"}>
+                <a
+                  href="https://www.mos.ru/dit/"
+                  target={"_blank"}
+                  rel="noreferrer"
+                >
                   <ImageWrap>
                     <img src={Dit} style={{ height: 38, width: 142 }} alt="" />
                   </ImageWrap>

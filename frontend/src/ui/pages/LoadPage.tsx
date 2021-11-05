@@ -48,6 +48,7 @@ const TopLine = styled.div`
 
 const AlertComponent = styled(motion(Alert))`
   margin-top: 15px;
+
   & ul {
     & li {
       list-style: inside disc;
@@ -56,35 +57,34 @@ const AlertComponent = styled(motion(Alert))`
 `;
 
 export const LoadPage: CT<unknown> = () => {
-  const [files, setFiles] = useState<File[]>([]);
-  const [processLoad, setProcessLoad] = useState(false);
+  useTitle("Создать пакет");
 
-  const dispath = useAppDispatch();
+  const [files, setFiles] = useState<File[]>([]);
+
+  const [processLoad, setProcessLoad] = useState(false);
+  const dispatch = useAppDispatch();
+
   const history = useHistory();
 
   const uploadAnimate = !!files.length
     ? uploadFileAnimate.haveFiles
     : uploadFileAnimate.notFiles;
-
   const loadFileHandler = (files: File[]) => {
     setFiles(files);
   };
-
   const clearHandler = () => {
     setFiles([]);
   };
-
   const submitHandler = async () => {
     setProcessLoad(true);
     const data = await fileService.upload(files);
-    const idPackage = data.data.task_id;
     history.push(`/package/${data.data.task_id}`);
   };
 
   useEffect(() => {
-    dispath(clearAllPackage());
+    dispatch(clearAllPackage());
+    //eslint-disable-next-line
   }, []);
-  useTitle("Создать пакет");
   return (
     <PageTemplate>
       <TopLine>

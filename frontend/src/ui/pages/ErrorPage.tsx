@@ -7,12 +7,14 @@ import { useTitle } from "ahooks";
 
 export const ErrorPage: CT<unknown> = () => {
   const dispatch = useAppDispatch();
+  useTitle("Ошибка");
+
   useEffect(() => {
     return () => {
       dispatch(clearAppError());
     };
+    //eslint-disable-next-line
   }, []);
-  useTitle("Ошибка");
   return (
     <>
       <PageTemplate>

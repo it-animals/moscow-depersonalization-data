@@ -43,16 +43,20 @@ const settings = {
   slidesToScroll: 1,
 };
 export const InitialFileViewPage: CT<unknown> = () => {
+  useTitle("Просмотр исходных файлов");
+
   const params = useParams<{ id: string; image: string }>();
   const viewFile = useAppSelector(selectViewFile);
   const refSlider = useRef(null);
   const dispatch = useAppDispatch();
+
   const history = useHistory();
 
   useEffect(() => {
     return () => {
       dispatch(clearViewFile);
     };
+    //eslint-disable-next-line
   }, []);
 
   useEffect(() => {
@@ -61,6 +65,7 @@ export const InitialFileViewPage: CT<unknown> = () => {
       //@ts-ignore
       refSlider.current.slickGoTo(Number(params.image - 1));
     }, 0);
+    //eslint-disable-next-line
   }, [refSlider, viewFile, params.image]);
 
   useEffect(() => {
@@ -81,10 +86,10 @@ export const InitialFileViewPage: CT<unknown> = () => {
         }
       })();
     }
+    //eslint-disable-next-line
   }, [viewFile]);
-  const path = appConfig.apiUrl;
 
-  useTitle("Просмотр исходных файлов");
+  const path = appConfig.apiUrl;
   return (
     <PageTemplateView>
       {viewFile && (

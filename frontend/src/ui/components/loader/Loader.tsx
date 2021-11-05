@@ -1,6 +1,6 @@
 import styled, { keyframes } from "styled-components";
 import { InsertDriveFileOutlined } from "@mui/icons-material";
-import { Typography, useTheme } from "@mui/material";
+import { Typography } from "@mui/material";
 
 const rotate = keyframes`
   from {
@@ -29,7 +29,6 @@ const Container = styled.div`
   flex-direction: column;
 `;
 export const Loader: CT<unknown> = ({ className, children }) => {
-  const theme = useTheme();
   return (
     <Container className={className}>
       <LooIcon

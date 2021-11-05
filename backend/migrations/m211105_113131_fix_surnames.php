@@ -86,6 +86,10 @@ class m211105_113131_fix_surnames extends Migration
 
         ]]);
 
+        $this->batchInsert('name_surname', ['word'], [
+            ["мусульбес"],
+            ["мусульбеса"],
+        ]);
     }
 
     /**

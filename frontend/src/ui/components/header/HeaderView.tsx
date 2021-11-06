@@ -44,7 +44,7 @@ const viewMode = {
 
 export const HeaderView: CT<unknown> = () => {
   const history = useHistory();
-  const params = useParams<{ id: string; image: string }>();
+  const params = useParams<{ packageId: string; id: string; image: string }>();
   const countImages = useAppSelector(selectCountImages);
   const fileView = useAppSelector(selectViewFile);
   const path = history.location.pathname.includes("view")
@@ -55,6 +55,7 @@ export const HeaderView: CT<unknown> = () => {
 
   useEffect(() => {
     if (!countImages) return;
+    if (isNaN(Number(params.packageId))) history.push("/");
     if (isNaN(Number(params.image))) history.push("/");
     if (isNaN(Number(params.id))) history.push("/");
     if (countImages < Number(params.image)) {
@@ -83,9 +84,10 @@ export const HeaderView: CT<unknown> = () => {
                   count={countImages ?? 0}
                   onChange={(event, page) => {
                     history.push({
-                      pathname: `/${path}/${params.id}/${page}`,
+                      pathname: `/${path}/${params.packageId}/${params.id}/${page}`,
                     });
                   }}
+                  defaultPage={Number(params.image) ?? 0}
                   color="secondary"
                 />
               </div>

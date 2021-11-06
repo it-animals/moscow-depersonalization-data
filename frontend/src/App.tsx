@@ -18,9 +18,18 @@ function App() {
         <Route path={"/"} exact component={PackageListPage} />
         <Route path={"/load/"} exact component={LoadPage} />
         <Route path={"/package/:packageId"} component={PackagePage} />
-        <Route path={"/compare/:id/:image"} component={CompareViewPage} />
-        <Route path={"/view/:id/:image"} component={ViewDocumentPage} />
-        <Route path={"/initial/:id/:image"} component={InitialFileViewPage} />
+        <Route
+          path={"/compare/:packageId/:id/:image"}
+          component={CompareViewPage}
+        />
+        <Route
+          path={"/view/:packageId/:id/:image"}
+          component={ViewDocumentPage}
+        />
+        <Route
+          path={"/initial/:packageId/:id/:image"}
+          component={InitialFileViewPage}
+        />
         <Route path={"/error"} component={ErrorPage} />
         <Route path={"/404"} component={NotFoundPage} />
         <Route path={"/403"} component={ForbiddenPage} />

@@ -74,12 +74,12 @@ const SpecialAlert = styled(motion(Alert))`
 
 const parsedType = [
   {
-    value: "Экспериментальный",
-    id: 1,
-  },
-  {
     value: "Только ФИО",
     id: 2,
+  },
+  {
+    value: "Экспериментальный",
+    id: 1,
   },
 ];
 
@@ -92,8 +92,8 @@ export const LoadPage: CT<unknown> = () => {
   const dispatch = useAppDispatch();
 
   const [selectValue, setSelectValue] = useState({
-    value: "Экспериментальный",
-    id: 1,
+    value: "Только ФИО",
+    id: 2,
   });
 
   const [wasAnimate, setWasAnimate] = useState(false);

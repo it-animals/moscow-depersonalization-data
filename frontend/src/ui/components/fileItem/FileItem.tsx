@@ -155,7 +155,7 @@ export const FileItem: CT<{ item: FileType; showAnimate: boolean }> = ({
                         <>
                           <MenuItem onClick={handleClose}>
                             <MenuLink
-                              to={`/compare/${item.id}/1`}
+                              to={`/compare/${item.task_id}/${item.id}/1`}
                               onClick={clickHandler}
                             >
                               Режим сравнения
@@ -163,7 +163,7 @@ export const FileItem: CT<{ item: FileType; showAnimate: boolean }> = ({
                           </MenuItem>
                           <MenuItem onClick={handleClose}>
                             <MenuLink
-                              to={`/view/${item.id}/1`}
+                              to={`/view/${item.task_id}/${item.id}/1`}
                               onClick={clickHandler}
                             >
                               Преобразованные файлы
@@ -173,7 +173,7 @@ export const FileItem: CT<{ item: FileType; showAnimate: boolean }> = ({
                       )}
                       <MenuItem onClick={handleClose}>
                         <MenuLink
-                          to={`/initial/${item.id}/1`}
+                          to={`/initial/${item.task_id}/${item.id}/1`}
                           onClick={clickHandler}
                         >
                           Исходные файлы

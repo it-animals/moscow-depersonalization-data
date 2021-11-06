@@ -57,12 +57,18 @@ class ImageParser
      * @var float
      */
     private float $dpi;
-    
+
     /**
      * Признак парсинга только ФИО
      * @var bool
      */
     private bool $onlyFio;
+
+    /**
+     * Массив для найденных адресов
+     * @var array
+     */
+    private array $addresses = [];
 
     public function __construct(string $imagePath, string $pdfPath, string $resultPath, bool $onlyFio = true)
     {
@@ -162,7 +168,24 @@ class ImageParser
             if ($matches) {
                 foreach($matches[0] as $phone) {
                     $result[] = trim($phone);
-                }                
+                }
+            }
+            preg_match_all('/((адресу|адрес):?.+?). [а-яё]+ [а-яё]+/iu', $row, $matches);
+            if ($matches) {
+                foreach($matches[1] as $address) {
+                    $isAddress = false;
+                    $addressRaw = str_replace(',', '', trim($address));
+                    $parts = explode(' ', $addressRaw);
+                    foreach($parts as $part) {
+                        if(AddressObject::findOne(['word' => $part])) {
+                            $isAddress = true;
+                            break;
+                        }
+                    }
+                    if($isAddress) {
+                        $this->addresses[] = $address;
+                    }
+                }
             }
         }
         return $result;
@@ -199,17 +222,46 @@ class ImageParser
                 $result[] = $this->unionWords([$words[$i - 1], $words[$i]]);
             } elseif ($i > 2 && $this->isPDn([$words[$i - 2]['word'], $words[$i - 1]['word'], $words[$i]['word']], $pdns)) {
                 $result[] = $this->unionWords([$words[$i - 2], $words[$i - 1], $words[$i]]);
-            } elseif ($length > 3 && $startWithBig && preg_match("/(вич|вича|вичу|вичем|виче|[ео]вна|[ео]вны|[ео]вне|[ео]вну|[ео]вной|[ео]вне)\W{0,}$/u", $base) 
+            } elseif ($length > 3 && $startWithBig && preg_match("/(вич|вича|вичу|вичем|виче|[ео]вна|[ео]вны|[ео]вне|[ео]вну|[ео]вной|[ео]вне)\W{0,}$/u", $base)
                     && !in_array($base, ['основной']) ) { //поиск отчеств по окончаниям
                 $result[] = $this->unionWords([$words[$i]]);
             } elseif ($length > 1 && $startWithBig && NameSurname::findOne(['word' => $base])) { //поиск имен и фамилий по словарю
                 $result[] = $this->unionWords([$words[$i]]);
-            } elseif (!$this->onlyFio && $length > 1 && $startWithBig && AddressObject::findOne(['word' => $base])) { //поиск объектов адресов по словарю
-                $result[] = $this->unionWords([$words[$i]]);
+            }
+        }
+        foreach($this->addresses as $address) {
+            if(($addressWords = $this->findWordsInAddress($words, $address))) {
+                $result[] = $addressWords;
             }
         }
         return $result;
     }
+    /**
+     * Поиск слов, составляющих адрес
+     * @param array $words слова
+     * @param string $address адрес
+     * @return array
+     */
+    private function findWordsInAddress(array $words, string $address): array {
+        $startI = null;
+        $endI = null;
+        foreach($words as $i => $word) {
+            if(preg_match("/^{$word['word']}/u", $address)) {
+                $startI = $i;
+            }
+            if($startI && $i > $startI && preg_match("/{$word['word']}$/u", $address)) {
+                $endI = $i;
+                break;
+            }
+        }
+        if($startI != null && $endI != null) {
+            $unionWords = array_slice($words, $startI, $endI - $startI + 1);
+            return $this->unionWords($unionWords);
+
+        }
+        return [];
+    }
+
 
     /**
      * Замена ошибочных латинских букв на кириллицу
@@ -248,7 +300,6 @@ class ImageParser
      */
     private function unionWords(array $words): array
     {
-        var_dump($words);
         $xMin = $words[0]['xMin'];
         $yMin = $words[0]['yMin'];
         $xMax = $words[0]['xMax'];

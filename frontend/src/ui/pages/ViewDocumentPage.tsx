@@ -43,7 +43,7 @@ const settings = {
   slidesToScroll: 1,
 };
 export const ViewDocumentPage: CT<unknown> = () => {
-  const params = useParams<{ id: string; image: string }>();
+  const params = useParams<{ packageId: string; id: string; image: string }>();
   const viewFile = useAppSelector(selectViewFile);
   const refSlider = useRef(null);
   const dispatch = useAppDispatch();
@@ -71,17 +71,17 @@ export const ViewDocumentPage: CT<unknown> = () => {
     if (!viewFile) {
       (async () => {
         try {
-          const files = await taskService.view(Number(params.id));
+          const files = await taskService.view(Number(params.packageId));
           const data = files.data.files.find(
-            (item) => item.task_id === Number(params.id)
+            (item) => item.id === Number(params.id)
           );
           if (data) {
             dispatch(setViewFile(data));
           } else {
-            history.push(`/package/${params.id}`);
+            history.push(`/package/${params.packageId}`);
           }
         } catch (e) {
-          history.push(`/package/${params.id}`);
+          history.push(`/package/${params.packageId}`);
         }
       })();
     }

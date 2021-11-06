@@ -60,7 +60,6 @@ class FileParser
         if (!file_exists($tmpFolder)) {
             mkdir($tmpFolder);
         }
-
         if ($this->type == 'pdf') {
             $pagesRaw = exec("pdfinfo {$this->inputPath} | grep Pages");
             preg_match('/\d+/i', $pagesRaw, $search);

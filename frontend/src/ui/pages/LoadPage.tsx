@@ -1,7 +1,16 @@
 import { PageTemplate } from "../components/templates/PageTemplate";
 import { UploadFile } from "../features/UploadFile/UploadFile";
 import styled from "styled-components";
-import { Alert, Button, Paper, Typography } from "@mui/material";
+import {
+  Alert,
+  Button,
+  MenuItem,
+  OutlinedInput,
+  Paper,
+  Select,
+  SelectChangeEvent,
+  Typography,
+} from "@mui/material";
 import { useEffect, useState } from "react";
 import { fileService } from "../../service/file/fileService";
 import { motion } from "framer-motion";
@@ -46,15 +55,33 @@ const TopLine = styled.div`
   margin-bottom: 40px;
 `;
 
-const AlertComponent = styled(motion(Alert))`
+const SelectLine = styled.div`
+  display: flex;
+  align-items: center;
+  margin-top: 20px;
+  justify-content: flex-end;
+`;
+
+const SpecialAlert = styled(motion(Alert))`
   margin-top: 15px;
 
   & ul {
     & li {
-      list-style: inside disc;
+      list-style: disc;
     }
   }
 `;
+
+const parsedType = [
+  {
+    value: "Экспериментальный",
+    id: 1,
+  },
+  {
+    value: "Только ФИО",
+    id: 2,
+  },
+];
 
 export const LoadPage: CT<unknown> = () => {
   useTitle("Создать пакет");
@@ -63,6 +90,13 @@ export const LoadPage: CT<unknown> = () => {
 
   const [processLoad, setProcessLoad] = useState(false);
   const dispatch = useAppDispatch();
+
+  const [selectValue, setSelectValue] = useState({
+    value: "Экспериментальный",
+    id: 1,
+  });
+
+  const [wasAnimate, setWasAnimate] = useState(false);
 
   const history = useHistory();
 
@@ -81,6 +115,18 @@ export const LoadPage: CT<unknown> = () => {
     history.push(`/package/${data.data.task_id}`);
   };
 
+  const handleChange = (e: SelectChangeEvent<string>) => {
+    const string = e.target.value;
+    const val = parsedType.find((item) => item.value === string);
+    setSelectValue(val!);
+  };
+
+  useEffect(() => {
+    setTimeout(() => {
+      setWasAnimate(true);
+    }, 2000);
+    //eslint-disable-next-line
+  }, []);
   useEffect(() => {
     dispatch(clearAllPackage());
     //eslint-disable-next-line
@@ -99,21 +145,55 @@ export const LoadPage: CT<unknown> = () => {
 
       {!!files.length && !processLoad && (
         <>
-          <AlertComponent {...upToDownFn(0.4, 0.6)} severity="info">
-            <Typography fontWeight={"bold"}>
-              Обработка файлов находится в экспериментальном режиме
+          <SelectLine>
+            <Typography marginRight={"15px"} fontWeight={"bold"}>
+              Способ обработки
             </Typography>
-            <br />
-            <Typography> Добавлено:</Typography>
-            <ul>
-              <li>
-                <Typography>Поиск и удаление email, телефонов;</Typography>
-              </li>
-              <li>
-                <Typography>Поиск и удаление адресов</Typography>
-              </li>
-            </ul>
-          </AlertComponent>
+            <Select
+              displayEmpty
+              onChange={handleChange}
+              value={selectValue.value}
+              input={<OutlinedInput />}
+              inputProps={{ "aria-label": "Without label" }}
+            >
+              {parsedType.map(({ value, id }) => (
+                <MenuItem key={id} value={value}>
+                  {value}
+                </MenuItem>
+              ))}
+            </Select>
+          </SelectLine>
+          {selectValue.id === 1 && (
+            <SpecialAlert
+              {...upToDownFn(wasAnimate ? 0 : 0.4, wasAnimate ? 0 : 0.6)}
+              severity="info"
+            >
+              <Typography fontWeight={"bold"}>
+                Обработка файлов находится в экспериментальном режиме
+              </Typography>
+              <Typography> Добавлено:</Typography>
+              <br />
+              <ul>
+                <li>
+                  <Typography>Поиск и удаление email, телефонов;</Typography>
+                </li>
+                <li>
+                  <Typography>Поиск и удаление адресов</Typography>
+                </li>
+              </ul>
+            </SpecialAlert>
+          )}
+          {selectValue.id === 2 && (
+            <SpecialAlert severity="info">
+              <Typography fontWeight={"bold"}>
+                Обработка файлов находится в режиме фио
+              </Typography>
+              <Typography>
+                {" "}
+                Обработка будет происходить в стандартном режиме
+              </Typography>
+            </SpecialAlert>
+          )}
           <ButtonPanel {...upToDownFn(0.4, 0.8)}>
             <Button
               color={"secondary"}

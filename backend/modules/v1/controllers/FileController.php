@@ -11,10 +11,12 @@ use app\services\FileService;
 use Yii;
 use yii\queue\db\Queue;
 use yii\rest\Controller;
+use yii\web\ForbiddenHttpException;
 use yii\web\NotFoundHttpException;
 use yii\web\UploadedFile;
 use function array_key_exists;
 use function date;
+use function implode;
 use function is_dir;
 use function scandir;
 use function var_dump;
@@ -67,7 +69,10 @@ class FileController extends Controller
 
         $task->date_start = date('d.m.Y H:i:s');
         $task->status = File::STATUS_WORK;
-        $task->save();
+        if (!$task->save()) {
+            $errors = implode("; ", $task->getErrorSummary(false));
+            throw new ForbiddenHttpException($errors);
+        }
 
         foreach ($files as $file) {
             $model = new File();

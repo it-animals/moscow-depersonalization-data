@@ -54,6 +54,7 @@ export const FileList: CT<{ onClickFilter: VoidFunction }> = ({
   }>({ filterBy: 0 });
   const [inputSearch, setInputSearch] = useState("");
   const [existSearch, setExitSearch] = useState(false);
+  const [wasClickFilter, setClickFilter] = useState(false);
 
   const packageFiles = useAppSelector(selectPackage);
   const filteredFiles = useAppSelector(selectFilterPackage);
@@ -83,6 +84,7 @@ export const FileList: CT<{ onClickFilter: VoidFunction }> = ({
   const clickFilterHandler = (status: FilterType) => {
     onClickFilter();
     setUrlState({ filterBy: status });
+    setClickFilter(true);
   };
 
   const filterBy = (data: PackageType, filterBy: FilterType): PackageType => {
@@ -170,7 +172,10 @@ export const FileList: CT<{ onClickFilter: VoidFunction }> = ({
         {filteredData.files.length > 0 ? (
           filteredData!.files.map((item) => (
             <Grid item xs={4} key={item.id}>
-              <FileItem showAnimate={!existSearch} item={item} />
+              <FileItem
+                showAnimate={!(existSearch || wasClickFilter)}
+                item={item}
+              />
             </Grid>
           ))
         ) : (

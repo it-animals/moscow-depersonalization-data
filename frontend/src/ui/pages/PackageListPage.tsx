@@ -40,6 +40,7 @@ export const PackageListPage: CT<unknown> = () => {
   const [list, setList] = useState<PackageType[]>([]);
   const loadContextData = useContext(LoadContext);
   const [isExistLoad, setExistLoad] = useState(false);
+  const [wasClickFilter, setClickFilter] = useState(false);
   const [urlState, setUrlState] = useUrlState<{
     filterBy: FilterType;
   }>({ filterBy: 0 });
@@ -78,6 +79,7 @@ export const PackageListPage: CT<unknown> = () => {
 
   const clickFilterHandler = (status: FilterType) => {
     setUrlState({ filterBy: status });
+    setClickFilter(true);
   };
 
   const filteredData = filterBy(list, Number(urlState.filterBy) as FilterType);
@@ -147,7 +149,11 @@ export const PackageListPage: CT<unknown> = () => {
         {filteredData.length > 0
           ? filteredData.map((item) => {
               return (
-                <LinePackage {...upToDownFn(0.4, 0.22)} item xs={4}>
+                <LinePackage
+                  {...upToDownFn(0.4, wasClickFilter ? 0 : 0.22)}
+                  item
+                  xs={4}
+                >
                   <PackageItem
                     onShowClick={stopLoadHandler}
                     id={item.id}

@@ -171,8 +171,8 @@ export const LoadPage: CT<unknown> = () => {
               <Typography fontWeight={"bold"}>
                 Обработка файлов находится в экспериментальном режиме
               </Typography>
-              <Typography> Добавлено:</Typography>
               <br />
+              <Typography> Добавлено:</Typography>
               <ul>
                 <li>
                   <Typography>Поиск и удаление email, телефонов;</Typography>

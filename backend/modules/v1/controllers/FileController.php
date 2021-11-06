@@ -19,7 +19,6 @@ use function date;
 use function implode;
 use function is_dir;
 use function scandir;
-use function var_dump;
 
 class FileController extends Controller
 {

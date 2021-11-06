@@ -34,7 +34,8 @@ class FileParserJob extends BaseObject implements JobInterface
         if (!$file) {
             return false;
         }
-        $parser = new FileParser($file->base_path);
+        $onlyFio = $file->task->onlyFio;
+        $parser = new FileParser($file->base_path, $onlyFio);
 
         try {
             if ($parser->parse()) {

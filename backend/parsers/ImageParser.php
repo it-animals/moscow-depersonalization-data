@@ -57,12 +57,19 @@ class ImageParser
      * @var float
      */
     private float $dpi;
+    
+    /**
+     * Признак парсинга только ФИО
+     * @var bool
+     */
+    private bool $onlyFio;
 
-    public function __construct(string $imagePath, string $pdfPath, string $resultPath)
+    public function __construct(string $imagePath, string $pdfPath, string $resultPath, bool $onlyFio = true)
     {
         $this->imagePath = $imagePath;
         $this->pdfPath = $pdfPath;
         $this->resultPath = $resultPath;
+        $this->onlyFio = $onlyFio;
 
         $pdfSize = $this->getPdfSize($pdfPath);
         $pdfWidth = min($pdfSize[0], $pdfSize[1]); //ищем ширину листа в Pdf
@@ -135,7 +142,7 @@ class ImageParser
             $result = array_merge($result, $matches[0]);
         }
         $result = array_filter($result, function ($pdn) {
-            if (preg_match("/правительств|московск|федеральн|москв|росси|консультант|труд|отдел|управлени|департамент|заместител|начальник/ui", $pdn)) {
+            if (preg_match("/пол|мужск|женск|фамилия|имя|отчество|страна|строение|квартира|субъект|район|улица|дом|корпус|нет|организация|год|серия|номер|дата|орган|правительств|московск|федеральн|москв|росси|консультант|труд|отдел|управлени|департамент|заместител|начальник/ui", $pdn)) {
                 return false;
             }
             return true;
@@ -144,15 +151,19 @@ class ImageParser
             return str_replace(',', '', $pdn);
         }, $result);
 
-        //поиск email адресов
-        preg_match_all('/[a-z0-9\-_]+@[a-zа-яё\.\-_]+/ui', $row, $matches);
-        if ($matches) {
-            $result = array_merge($result, $matches[0]);
-        }
-        //поиск телефонов
-        preg_match_all('/(\+79|89)[0-9\- \(\)]{8,15}/i', $row, $matches);
-        if ($matches) {
-            $result = array_merge($result, $matches[0]);
+        if(!$this->onlyFio) {
+            //поиск email адресов
+            preg_match_all('/[a-z0-9\-_]+@[a-zа-яё\.\-_]+/ui', $row, $matches);
+            if ($matches) {
+                $result = array_merge($result, $matches[0]);
+            }
+            //поиск телефонов
+            preg_match_all('/(\+7|8)[0-9\- \(\)]{8,20}/i', $row, $matches);
+            if ($matches) {
+                foreach($matches[0] as $phone) {
+                    $result[] = trim($phone);
+                }                
+            }
         }
         return $result;
     }
@@ -166,12 +177,12 @@ class ImageParser
     private function findWords(string $pdfPath, array $pdns): array
     {
         $content = [];
-        exec("pdftotext -bbox -r {$this->dpi}  $pdfPath - | grep word", $content);
+        exec("pdftotext -bbox -r {$this->dpi}  $pdfPath - | grep \<word", $content);
         $search = [];
         $result = [];
         $words = [];
         foreach ($content as $i => $word) {
-            preg_match('/\<word xMin="([\d.]+)" yMin="([\d.]+)" xMax="([\d.]+)" yMax="([\d.]+)">(.+)\<\/word\>/u', $word, $search);
+            preg_match('/\<word xMin="(\-?[\d.]+)" yMin="(\-?[\d.]+)" xMax="(\-?[\d.]+)" yMax="(\-?[\d.]+)">(.+)\<\/word\>/u', $word, $search);
             $words[] = [
                 'xMin' => $search[1],
                 'yMin' => $search[2],
@@ -188,11 +199,12 @@ class ImageParser
                 $result[] = $this->unionWords([$words[$i - 1], $words[$i]]);
             } elseif ($i > 2 && $this->isPDn([$words[$i - 2]['word'], $words[$i - 1]['word'], $words[$i]['word']], $pdns)) {
                 $result[] = $this->unionWords([$words[$i - 2], $words[$i - 1], $words[$i]]);
-            } elseif ($length > 3 && $startWithBig && preg_match("/(вич|вича|вичу|вичем|виче|[ео]вна|[ео]вны|[ео]вне|[ео]вну|[ео]вной|[ео]вне)\W{0,}$/u", $base)) { //поиск отчеств по окончаниям
+            } elseif ($length > 3 && $startWithBig && preg_match("/(вич|вича|вичу|вичем|виче|[ео]вна|[ео]вны|[ео]вне|[ео]вну|[ео]вной|[ео]вне)\W{0,}$/u", $base) 
+                    && !in_array($base, ['основной']) ) { //поиск отчеств по окончаниям
                 $result[] = $this->unionWords([$words[$i]]);
             } elseif ($length > 1 && $startWithBig && NameSurname::findOne(['word' => $base])) { //поиск имен и фамилий по словарю
                 $result[] = $this->unionWords([$words[$i]]);
-            } elseif ($length > 1 && $startWithBig && AddressObject::findOne(['word' => $base])) { //поиск объектов адресов по словарю
+            } elseif (!$this->onlyFio && $length > 1 && $startWithBig && AddressObject::findOne(['word' => $base])) { //поиск объектов адресов по словарю
                 $result[] = $this->unionWords([$words[$i]]);
             }
         }
@@ -236,6 +248,7 @@ class ImageParser
      */
     private function unionWords(array $words): array
     {
+        var_dump($words);
         $xMin = $words[0]['xMin'];
         $yMin = $words[0]['yMin'];
         $xMax = $words[0]['xMax'];

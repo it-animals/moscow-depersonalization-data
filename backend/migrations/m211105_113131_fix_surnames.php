@@ -122,6 +122,9 @@ class m211105_113131_fix_surnames extends Migration
             "родной",
             "апрель",
             "фио",
+            "настоящий",
+            "работников",
+            "директор"
         ]]);
 
         $this->batchInsert('name_surname', ['word'], [

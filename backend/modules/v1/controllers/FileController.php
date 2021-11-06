@@ -14,10 +14,7 @@ use yii\rest\Controller;
 use yii\web\NotFoundHttpException;
 use yii\web\UploadedFile;
 use function array_key_exists;
-use function count;
 use function date;
-use function ini_get;
-use function ini_set;
 use function is_dir;
 use function scandir;
 use function var_dump;
@@ -65,6 +62,9 @@ class FileController extends Controller
         $files = UploadedFile::getInstancesByName('files');
 
         $task = new Task();
+        $task->loadDefaultValues();
+        $task->load(Yii::$app->request->post());
+
         $task->date_start = date('d.m.Y H:i:s');
         $task->status = File::STATUS_WORK;
         $task->save();

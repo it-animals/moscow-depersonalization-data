@@ -36,14 +36,23 @@ const WrapperLink = styled.div`
   column-gap: 20px;
 `;
 
+const viewMode = {
+  view: "Преобразованные файлы",
+  initial: "Исходные файлы",
+  compare: "Сравнение файлов",
+};
+
 export const HeaderView: CT<unknown> = () => {
   const history = useHistory();
   const params = useParams<{ id: string; image: string }>();
   const countImages = useAppSelector(selectCountImages);
   const fileView = useAppSelector(selectViewFile);
-  const path = useHistory().location.pathname.includes("view")
+  const path = history.location.pathname.includes("view")
     ? "view"
-    : "initial";
+    : history.location.pathname.includes("initial")
+    ? "initial"
+    : "compare";
+
   useEffect(() => {
     if (!countImages) return;
     if (isNaN(Number(params.image))) history.push("/");
@@ -67,9 +76,7 @@ export const HeaderView: CT<unknown> = () => {
                   <Button variant={"contained"}>Назад к файлам</Button>
                 </Link>
 
-                <Typography variant={"h6"}>
-                  {path === "view" ? "Преобразованные файлы" : "Исходные файлы"}
-                </Typography>
+                <Typography variant={"h6"}>{viewMode[path]}</Typography>
               </WrapperLink>
               <div>
                 <Pagination

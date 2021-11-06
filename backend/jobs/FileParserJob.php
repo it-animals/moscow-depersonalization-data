@@ -33,8 +33,8 @@ class FileParserJob extends BaseObject implements JobInterface
         $file = File::findOne($this->fileId);
         if (!$file) {
             return false;
-        }        
-        $onlyFio = true; //@toto вычислять из свойства $file->task->onlyFio
+        }
+        $onlyFio = $file->task->onlyFio;
         $parser = new FileParser($file->base_path, $onlyFio);
 
         try {

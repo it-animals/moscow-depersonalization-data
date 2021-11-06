@@ -2,8 +2,6 @@
 
 namespace app\models;
 
-use Yii;
-
 /**
  * This is the model class for table "task".
  *
@@ -11,6 +9,7 @@ use Yii;
  * @property string $date_start дата и время начала преобразования
  * @property string|null $date_end дата и время конца преобразования
  * @property int $status статус (1 — в работе, 2 — преобразован, 3 — провал)
+ * @property boolean $onlyFio
  *
  * @property File[] $files
  */
@@ -31,9 +30,11 @@ class Task extends \yii\db\ActiveRecord
     {
         return [
             [['date_start', 'date_end'], 'safe'],
-            [['status'], 'required'],
+            [['status', 'onlyFio'], 'required'],
             [['status'], 'default', 'value' => null],
+            [['onlyFio'], 'default', 'value' => true],
             [['status'], 'integer'],
+            [['onlyFio'], 'boolean'],
         ];
     }
 
@@ -47,6 +48,7 @@ class Task extends \yii\db\ActiveRecord
             'date_start' => 'дата и время начала преобразования',
             'date_end' => 'дата и время конца преобразования',
             'status' => 'статус (1 — в работе, 2 — преобразован, 3 — провал)',
+            'onlyFio' => 'только фио',
         ];
     }
 

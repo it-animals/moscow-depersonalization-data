@@ -111,7 +111,7 @@ export const LoadPage: CT<unknown> = () => {
   };
   const submitHandler = async () => {
     setProcessLoad(true);
-    const data = await fileService.upload(files);
+    const data = await fileService.upload(files, selectValue.id === 2 ? 1 : 0);
     history.push(`/package/${data.data.task_id}`);
   };
 

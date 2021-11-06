@@ -21,7 +21,8 @@ export const PackageItem: CT<{
   onShowClick: VoidFunction;
   id: number;
   status: 1 | 2 | 3 | 4;
-}> = ({ onShowClick, id, status }) => {
+  onlyFio: boolean;
+}> = ({ onShowClick, id, status, onlyFio }) => {
   const theme = useTheme();
 
   const abortHandler = () => {
@@ -43,6 +44,14 @@ export const PackageItem: CT<{
           Статус:&nbsp;
           <span style={{ color: theme.palette.secondary.main }}>
             {statusCatalog[status]}
+          </span>
+        </span>
+      </Typography>
+      <Typography variant={"h6"} fontWeight={"bold"}>
+        <span>
+          Тип:&nbsp;
+          <span style={{ color: theme.palette.secondary.main }}>
+            {onlyFio ? "Только ФИО" : "Экспериментальный"}
           </span>
         </span>
       </Typography>

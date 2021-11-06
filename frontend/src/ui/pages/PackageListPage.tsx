@@ -152,6 +152,7 @@ export const PackageListPage: CT<unknown> = () => {
                     onShowClick={stopLoadHandler}
                     id={item.id}
                     status={item.status}
+                    onlyFio={item.onlyFio}
                   />
                 </LinePackage>
               );

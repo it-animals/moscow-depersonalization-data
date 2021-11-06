@@ -8,7 +8,7 @@ export const fileService = {
     files.forEach((file) => {
       data.append("files[]", file);
     });
-    // data.append('onlyFio',String(type ?? 0));
+    data.append("Task[onlyFio]", String(type ?? 0));
     return axios.post<{ task_id: number }>(this.path + "upload", data);
   },
   preview(id: number, page: number) {

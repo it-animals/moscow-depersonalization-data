@@ -57,12 +57,19 @@ class ImageParser
      * @var float
      */
     private float $dpi;
+    
+    /**
+     * Признак парсинга только ФИО
+     * @var bool
+     */
+    private bool $onlyFio;
 
-    public function __construct(string $imagePath, string $pdfPath, string $resultPath)
+    public function __construct(string $imagePath, string $pdfPath, string $resultPath, bool $onlyFio = true)
     {
         $this->imagePath = $imagePath;
         $this->pdfPath = $pdfPath;
         $this->resultPath = $resultPath;
+        $this->onlyFio = $onlyFio;
 
         $pdfSize = $this->getPdfSize($pdfPath);
         $pdfWidth = min($pdfSize[0], $pdfSize[1]); //ищем ширину листа в Pdf
@@ -144,15 +151,17 @@ class ImageParser
             return str_replace(',', '', $pdn);
         }, $result);
 
-        //поиск email адресов
-        preg_match_all('/[a-z0-9\-_]+@[a-zа-яё\.\-_]+/ui', $row, $matches);
-        if ($matches) {
-            $result = array_merge($result, $matches[0]);
-        }
-        //поиск телефонов
-        preg_match_all('/(\+79|89)[0-9\- \(\)]{8,15}/i', $row, $matches);
-        if ($matches) {
-            $result = array_merge($result, $matches[0]);
+        if(!$this->onlyFio) {
+            //поиск email адресов
+            preg_match_all('/[a-z0-9\-_]+@[a-zа-яё\.\-_]+/ui', $row, $matches);
+            if ($matches) {
+                $result = array_merge($result, $matches[0]);
+            }
+            //поиск телефонов
+            preg_match_all('/(\+79|89)[0-9\- \(\)]{8,15}/i', $row, $matches);
+            if ($matches) {
+                $result = array_merge($result, $matches[0]);
+            }
         }
         return $result;
     }
@@ -192,7 +201,7 @@ class ImageParser
                 $result[] = $this->unionWords([$words[$i]]);
             } elseif ($length > 1 && $startWithBig && NameSurname::findOne(['word' => $base])) { //поиск имен и фамилий по словарю
                 $result[] = $this->unionWords([$words[$i]]);
-            } elseif ($length > 1 && $startWithBig && AddressObject::findOne(['word' => $base])) { //поиск объектов адресов по словарю
+            } elseif (!$this->onlyFio && $length > 1 && $startWithBig && AddressObject::findOne(['word' => $base])) { //поиск объектов адресов по словарю
                 $result[] = $this->unionWords([$words[$i]]);
             }
         }

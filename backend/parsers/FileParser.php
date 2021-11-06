@@ -32,11 +32,18 @@ class FileParser
 
     private string $path;
 
-    public function __construct(string $inputPath)
+    /**
+     * Признак парсинга только ФИО
+     * @var bool
+     */
+    private bool $onlyFio;
+    
+    public function __construct(string $inputPath, bool $onlyFio = true)
     {
         $this->inputPath = $inputPath;
         $path = dirname($inputPath);
         $this->path = $path;
+        $this->onlyFio = $onlyFio;
         FileHelper::createDirectory("{$path}/input");
         FileHelper::createDirectory("{$path}/result");
         FileHelper::createDirectory("{$path}/image");
@@ -110,7 +117,7 @@ class FileParser
                 exec($command3, $logs);
                 $pdfPath = $inputFolder.'/out.pdf';
             }
-            $imgParser = new ImageParser($imgPath, $pdfPath, $resultPath);
+            $imgParser = new ImageParser($imgPath, $pdfPath, $resultPath, $this->onlyFio);
             $imgParser->parse();
         }
 

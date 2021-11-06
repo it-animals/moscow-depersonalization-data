@@ -9,6 +9,7 @@ import { ViewDocumentPage } from "./ui/pages/ViewDocumentPage";
 import { PackageListPage } from "./ui/pages/PackageListPage";
 import { LoadPage } from "./ui/pages/LoadPage";
 import { InitialFileViewPage } from "./ui/pages/InitialFileViewPage";
+import { CompareViewPage } from "./ui/pages/CompareViewPage";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         <Route path={"/"} exact component={PackageListPage} />
         <Route path={"/load/"} exact component={LoadPage} />
         <Route path={"/package/:packageId"} component={PackagePage} />
+        <Route path={"/compare/:id/:image"} component={CompareViewPage} />
         <Route path={"/view/:id/:image"} component={ViewDocumentPage} />
         <Route path={"/initial/:id/:image"} component={InitialFileViewPage} />
         <Route path={"/error"} component={ErrorPage} />

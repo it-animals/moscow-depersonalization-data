@@ -152,14 +152,24 @@ export const FileItem: CT<{ item: FileType; showAnimate: boolean }> = ({
                       aria-labelledby="composition-button"
                     >
                       {!fileError(item) && !fileAbort(item) && (
-                        <MenuItem onClick={handleClose}>
-                          <MenuLink
-                            to={`/view/${item.id}/1`}
-                            onClick={clickHandler}
-                          >
-                            Преобразованные файлы
-                          </MenuLink>
-                        </MenuItem>
+                        <>
+                          <MenuItem onClick={handleClose}>
+                            <MenuLink
+                              to={`/compare/${item.id}/1`}
+                              onClick={clickHandler}
+                            >
+                              Режим сравнения
+                            </MenuLink>
+                          </MenuItem>
+                          <MenuItem onClick={handleClose}>
+                            <MenuLink
+                              to={`/view/${item.id}/1`}
+                              onClick={clickHandler}
+                            >
+                              Преобразованные файлы
+                            </MenuLink>
+                          </MenuItem>
+                        </>
                       )}
                       <MenuItem onClick={handleClose}>
                         <MenuLink

@@ -3,11 +3,12 @@ import axios from "axios";
 export const fileService = {
   path: "file/",
 
-  upload(files: File[]) {
+  upload(files: File[], type?: 0 | 1) {
     const data = new FormData();
     files.forEach((file) => {
       data.append("files[]", file);
     });
+    data.append("Task[onlyFio]", String(type ?? 0));
     return axios.post<{ task_id: number }>(this.path + "upload", data);
   },
   preview(id: number, page: number) {
